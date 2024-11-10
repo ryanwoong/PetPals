@@ -22,7 +22,7 @@ const HomePage = () => {
   return (
     <>
       <HomeNavBar />
-      <div style={{ position: 'relative', height: '87vh', backgroundColor: '#FDF5E6' }}>
+      <div style={{ position: 'relative', height: '100vh', backgroundColor: '#FDF5E6', overflow: 'hidden' }}>
 
         {/* Cat gif */}
         <img
