@@ -1,6 +1,6 @@
+import { Box, Button, Container, Text, TextInput, Title } from '@mantine/core';
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Box, Button, Container, Title, Text, TextInput } from '@mantine/core';
 import catGif from '../assets/Images/cat.gif';
 import monkeyGif from '../assets/Images/monkey.gif';
 import snakeGif from '../assets/Images/snake.gif';
