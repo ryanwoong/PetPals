@@ -6,16 +6,31 @@ export const addComment = async ({ postId, userId, authorId, commentBody }) => {
         const checkCommentResponse = await axios.post('http://localhost:5100/checkComment', {
             commentBody: commentBody
         });
-        
+       
         // If the comment check was successful, proceed with posting
         if (checkCommentResponse.status === 200) {
-            const response = await axios.post('http://localhost:5100/comments', {
+            // Add the comment
+            const commentResponse = await axios.post('http://localhost:5100/comments', {
                 postId,
                 userId,
                 authorId,
                 commentBody
             });
-            return response.data;
+
+            // If comment was added successfully, update user's coins
+            if (commentResponse.status === 201) {
+                try {
+                    await axios.post('http://localhost:5100/users/addCoins', {
+                        userId: authorId,
+                        amount: 5
+                    });
+                } catch (coinError) {
+                    console.error('Error updating coins:', coinError);
+                    // We don't throw here because the comment was still successful
+                }
+            }
+
+            return commentResponse.data;
         } else {
             console.log(`Comment is not safe or contains restricted words.`);
             return null;
