@@ -1,6 +1,5 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
-import { BrowserRouter } from "react-router-dom";
 
 import App from './App';
 import '@mantine/core/styles.css';
@@ -13,8 +12,6 @@ const theme = createTheme({
 });
 root.render(
   <MantineProvider theme={theme}>
-    <BrowserRouter>
       <App />
-    </BrowserRouter>
   </MantineProvider>
 );
