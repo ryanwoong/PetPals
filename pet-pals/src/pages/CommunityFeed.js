@@ -145,7 +145,7 @@ const CommunityFeed = () => {
                       wordWrap: 'break-word',  // Wrap long words inside the box
                     }}
                   >
-                    {entry.text.length > 150 ? entry.text.substring(0, 150) + '...' : entry.text} {/* Show a preview */}
+                    {entry.text.length > 70 ? entry.text.substring(0, 70) + '...' : entry.text} {/* Show a preview */}
                   </Text>
                 )}
 
