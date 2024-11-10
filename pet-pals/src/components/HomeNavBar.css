@@ -1,0 +1,39 @@
+/* HomeNavBar.css */
+.navbar {
+    display: flex;
+    align-items: center;
+    padding: 8px 20px;
+    background-color: #FFCF9F;
+    font-size: 16px;
+  }
+  
+  .logo-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100px;
+    height: 'auto';
+    margin-right: 20px;
+  }
+  
+  .logo-image {
+    width: 80px;
+    height: auto;
+  }
+  
+  .nav-link {
+    margin: 0 15px;
+    color: black;
+    text-decoration: none;
+    font-size: 16px;
+    transition: color 0.3s;
+  }
+  
+  .nav-link:hover {
+    color: #FFFAC3;
+  }
+  
+  .active-link {
+    color: #FFFAC3;
+  }
+  
