@@ -40,6 +40,7 @@ const Journal = () => {
             padding: '20px',
             overflowY: 'auto',  // Make it scrollable if the list is long
             marginRight: '20px',
+
           }}
         >
           <Text
@@ -49,6 +50,7 @@ const Journal = () => {
               fontSize: '1.8em',
               fontWeight: 'bold',
               marginBottom: '15px',
+              marginTop: '150px',
             }}
           >
             Previous Entries
@@ -116,7 +118,7 @@ const Journal = () => {
             display: 'flex',
             flexDirection: 'column',
             justifyContent: 'space-between',
-            marginTop: '50px',
+            marginTop: '150px',
             marginInlineEnd: '20px',
           }}
         >
