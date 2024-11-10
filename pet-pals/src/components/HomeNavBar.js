@@ -148,6 +148,7 @@ const HomeNavBar = () => {
   };
 
   const handleLogout = async () => {
+    // Log out the user and navigate to the main page
     try {
       await logout();
       navigate('/');

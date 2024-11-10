@@ -122,13 +122,14 @@ const HomePage = () => {
     return imageMap[itemId] || kibbleImage;
   };
 
+  // Handle click on the cat image
   const handleCatClick = () => {
     // Hearts can always be created
     const newHeart = { id: Date.now() };
     setHearts((prevHearts) => [...prevHearts, newHeart]);
     setTimeout(() => {
       setHearts((prevHearts) => prevHearts.filter((heart) => heart.id !== newHeart.id));
-    }, 1500);
+    }, 1500); // Remove heart after animation
 
     // Only show new affirmation if allowed
     if (canShowNewAffirmation) {

@@ -1,13 +1,14 @@
 import axios from "axios";
 
+// Function to add a new journal entry to the database
 export const addEntry = async ({ text, title, isPublic, authorId }) => {
     try {
         // First, create the entry
         const response = await axios.post("http://localhost:5100/addEntry", {
-            authorId: authorId,
-            title: title,
-            text: text,
-            isPublic: isPublic
+            authorId: authorId, // User ID of the entry author
+            title: title,       // Entry title
+            text: text,         // Entry content
+            isPublic: isPublic  // Visibility setting
         });
         
         // If entry was created successfully, update user's coins
@@ -25,6 +26,7 @@ export const addEntry = async ({ text, title, isPublic, authorId }) => {
        
         return response.data;
     } catch (error) {
+        // Log any errors and rethrow to handle them higher up if needed
         console.error('Error creating entry:', error);
         throw error;
     }

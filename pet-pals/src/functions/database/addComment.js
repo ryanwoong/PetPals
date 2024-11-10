@@ -1,5 +1,6 @@
 import axios from 'axios';
 
+// Function to add a comment to a specific post
 export const addComment = async ({ postId, userId, authorId, commentBody }) => {
     try {
         // First check if comment is safe
