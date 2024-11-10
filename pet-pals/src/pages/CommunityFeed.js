@@ -49,93 +49,37 @@ const CommunityFeed = () => {
     fetchPosts();
   }, []);
 
-  useEffect(() => {
-    const loadComments = async (userId, postId) => {
-      if (!expanded[postId]) return;
-      
-      try {
-        setCommentLoading(prev => ({ ...prev, [postId]: true }));
-        const fetchedComments = await fetchComments(userId, postId);
-        setComments(prev => ({
-          ...prev,
-          [postId]: fetchedComments
-        }));
-      } catch (error) {
-        console.error('Error loading comments:', error);
-      } finally {
-        setCommentLoading(prev => ({ ...prev, [postId]: false }));
-      }
-    };
-
-    entries.forEach(entry => {
-      if (expanded[entry.id]) {
-        loadComments(entry.authorId, entry.id);
-      }
-    });
-  }, [expanded, entries]);
-
-  const handleCommentSubmit = async (entryId, commentText) => {
-    if (!user) {
-        alert('Please log in to comment');
-        return;
-    }
-    
-    if (!commentText?.trim()) {
-        alert('Please enter a comment');
-        return;
-    }
-
+  const loadCommentsForPost = async (userId, postId) => {
+    console.log(`Loading comments for post ${postId} by user ${userId}`);
     try {
-        setCommentLoading(prev => ({ ...prev, [entryId]: true }));
-        
-        console.log('Starting comment submission process...');
-        const post = entries.find(entry => entry.id === entryId);
-        if (!post) {
-            throw new Error('Post not found');
-        }
-
-        console.log('Calling addComment with:', {
-            postId: entryId,
-            userId: post.authorId,
-            authorId: user.uid,
-            commentText: commentText.substring(0, 20) + '...' // Log first 20 chars for privacy
-        });
-
-        await addComment({
-            postId: entryId,
-            userId: post.authorId,
-            authorId: user.uid,
-            commentBody: commentText
-        });
-
-        console.log('Comment added successfully, fetching updated comments...');
-        const updatedComments = await fetchComments(post.authorId, entryId);
-        setComments(prev => ({
-            ...prev,
-            [entryId]: updatedComments
-        }));
-
-        setShowAddComment(prev => ({ ...prev, [entryId]: false }));
-        const inputElement = document.querySelector(`#comment-input-${entryId}`);
-        if (inputElement) {
-            inputElement.value = '';
-        }
-
+      setCommentLoading(prev => ({ ...prev, [postId]: true }));
+      const fetchedComments = await fetchComments(userId, postId);
+      console.log(`Fetched comments for post ${postId}:`, fetchedComments);
+      setComments(prev => ({
+        ...prev,
+        [postId]: fetchedComments
+      }));
     } catch (error) {
-        console.error('Failed to submit comment:', error);
-        // Show a more user-friendly error message
-        alert(error.message || 'Unable to submit comment. Please try again later.');
+      console.error(`Error loading comments for post ${postId}:`, error);
+      setError(`Failed to load comments for post ${postId}`);
     } finally {
-        setCommentLoading(prev => ({ ...prev, [entryId]: false }));
+      setCommentLoading(prev => ({ ...prev, [postId]: false }));
     }
-};
+  };
 
-
-  const handleToggleExpand = (entryId) => {
+  const handleToggleExpand = async (entryId) => {
+    const newExpandedState = !expanded[entryId];
     setExpanded(prev => ({
       ...prev,
-      [entryId]: !prev[entryId],
+      [entryId]: newExpandedState
     }));
+
+    if (newExpandedState) {
+      const post = entries.find(entry => entry.id === entryId);
+      if (post && post.authorId) {
+        await loadCommentsForPost(post.authorId, entryId);
+      }
+    }
   };
 
   const handleToggleAddComment = (entryId) => {
@@ -147,6 +91,49 @@ const CommunityFeed = () => {
       ...prev,
       [entryId]: !prev[entryId],
     }));
+  };
+
+  const handleCommentSubmit = async (entryId, commentText) => {
+    if (!user) {
+      alert('Please log in to comment');
+      return;
+    }
+    
+    if (!commentText?.trim()) {
+      alert('Please enter a comment');
+      return;
+    }
+
+    try {
+      setCommentLoading(prev => ({ ...prev, [entryId]: true }));
+      
+      console.log('Starting comment submission process...');
+      const post = entries.find(entry => entry.id === entryId);
+      if (!post) {
+        throw new Error('Post not found');
+      }
+
+      await addComment({
+        postId: entryId,
+        userId: post.authorId,
+        authorId: user.uid,
+        commentBody: commentText
+      });
+
+      await loadCommentsForPost(post.authorId, entryId);
+
+      setShowAddComment(prev => ({ ...prev, [entryId]: false }));
+      const inputElement = document.querySelector(`#comment-input-${entryId}`);
+      if (inputElement) {
+        inputElement.value = '';
+      }
+
+    } catch (error) {
+      console.error('Failed to submit comment:', error);
+      alert(error.message || 'Unable to submit comment. Please try again later.');
+    } finally {
+      setCommentLoading(prev => ({ ...prev, [entryId]: false }));
+    }
   };
 
   return (
@@ -249,8 +236,7 @@ const CommunityFeed = () => {
                 </Box>
 
                 {expanded[entry.id] && (
-                  <Box
-                  >
+                  <Box>
                     <Text
                       style={{
                         fontFamily: "'Fuzzy Bubbles', sans-serif",
