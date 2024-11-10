@@ -1,8 +1,11 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom'; // Import useNavigate
 import { Text, Button, Container, TextInput, Group, Box } from '@mantine/core';
 
 const CheckInPage = () => {
   const [selectedMood, setSelectedMood] = useState(null);
+
+  const navigate = useNavigate(); // Create navigate function to handle navigation
 
   const moods = [
     { id: 1, emoji: '😠', label: 'Angry' },
@@ -13,8 +16,7 @@ const CheckInPage = () => {
   ];
 
   const handleNextClick = () => {
-    alert("Next button clicked! Proceeding to the next step...");
-    // Handle the transition to the next step here
+    navigate('/home'); // Navigate to CheckIn page
   };
 
   return (
