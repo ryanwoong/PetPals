@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import LogoImage from '../assets/Logo.png';
+import LogoImage from '../assets/Images/logo.png';
 
 const HomeNavBar = () => {
   const styles = {
@@ -18,14 +18,10 @@ const HomeNavBar = () => {
     logoContainer: {
       display: 'flex',
       alignItems: 'center',
-      width: '70px',
-      height: '70px',
-      borderRadius: '50%',
-      backgroundColor: 'white',  // White background for the circular container
-      marginRight: '20px',       // Space between logo and links
+      marginRight: '20px',
     },
     logoImage: {
-      width: '70px',             // Scale the image to fit within the circle
+      width: '70px',
       height: 'auto',
     },
     link: {
