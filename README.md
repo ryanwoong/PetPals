@@ -9,7 +9,7 @@ Our project promotes peace and inclusion by providing a supportive, anonymous sp
 
 **Express Their Feelings**: Share personal thoughts, emotions, and experiences through journal entries, which can be either private or public.
 
-**View Posts Based on Emotions**: Users can browse content that resonates with their own feelings, fostering a sense of connection and understanding.
+**View Posts**: Users can browse content that resonates with their own feelings, fostering a sense of connection and understanding.
 
 **Earn Points**: Users earn points by posting entries or commenting uplifting messages, which help level up their companion buddy, adopt more pets, and gain accessories. These points encourage meaningful contributions, fostering a compassionate community where users inspire and uplift one another.
 
