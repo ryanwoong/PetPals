@@ -66,8 +66,7 @@ const AuthPage = () => {
     try {
       if (method === "signIn") {
         await login(form.email, form.password);
-        alert("Login successful!");
-        navigate("/checkin", { replace: true });
+        // navigate("/checkin", { replace: true });
       } else {
         // Ensure passwords match for registration
         if (form.password !== form.confirmPassword) {
