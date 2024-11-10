@@ -46,7 +46,7 @@ const AuthPage = () => {
         // Use the login function from context
         await login(form.email, form.password);
         alert('Login successful!');
-        navigate("/home", { replace: true });
+        navigate("/checkin", { replace: true });
       } else {
         if (form.password !== form.confirmPassword) {
           setError("Passwords do not match");
