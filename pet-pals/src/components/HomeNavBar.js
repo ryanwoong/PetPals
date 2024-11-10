@@ -47,7 +47,6 @@ const HomeNavBar = () => {
       <Link to="/home" style={styles.link}>Home</Link>
       <Link to="/community" style={styles.link}>Community</Link>
       <Link to="/journal" style={styles.link}>Journal</Link>
-      <Link to="/profile" style={styles.link}>Profile</Link>
     </nav>
   );
 };

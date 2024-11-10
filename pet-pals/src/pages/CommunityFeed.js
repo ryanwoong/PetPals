@@ -1,13 +1,19 @@
 import React from 'react';
+import HomeNavBar from '../components/HomeNavBar';
+
 
 const CommunityFeed = () => {
-
+    return (
+        <>
+          <HomeNavBar />
+          <div>
+            <h1>Community Feed</h1>
+          </div>
+        </>
+      );
 };
 
-  return (
-    <div style={{ position: 'relative', height: '100vh', backgroundColor: '#FDF5E6' }}>
-    </div>
-  );
+
 
 
 export default CommunityFeed;
