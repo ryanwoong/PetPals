@@ -54,8 +54,7 @@ const AuthPage = () => {
         }
         // Use the register function from context
         await register(form.email, form.password);
-        alert('Registration successful!');
-        navigate("/instructions", { replace: true });
+        navigate("/pickapet", { replace: true });
       }
     } catch (err) {
       // Handle specific Firebase errors with more user-friendly messages

@@ -2,7 +2,6 @@ import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import HomePage from './pages/HomePage';
 import PickAPetPage from './pages/PickAPetPage'
-import InstructionsPage from './pages/InstructionsPage'
 import CheckInPage from './pages/CheckInPage';
 import CommunityFeed from './pages/CommunityFeed';
 import Journal from './pages/Journal';
@@ -81,23 +80,7 @@ function App() {
               </ProtectedRoute>
             }
           />
-          
-          <Route
-            path="/instructions"
-            element={
-              <ProtectedRoute>
-                <InstructionsPage />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/checkin"
-            element={
-              <ProtectedRoute>
-                <CheckInPage />
-              </ProtectedRoute>
-            }
-          />
+
           <Route
             path="/pickapet"
             element={

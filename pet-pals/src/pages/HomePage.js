@@ -228,17 +228,16 @@ const HomePage = () => {
         const inventoryDoc = querySnapshot.docs[0];
         const currentQuantity = inventoryDoc.data().quantity;
 
+        // Update database first
         if (currentQuantity <= 1) {
-          // Remove the item if it's the last one
           await deleteDoc(doc(inventoryRef, inventoryDoc.id));
         } else {
-          // Decrease quantity by 1
           await updateDoc(doc(inventoryRef, inventoryDoc.id), {
             quantity: currentQuantity - 1,
           });
         }
 
-        // Update local state
+        // Update local inventory state
         setInventoryItems((prevInventory) =>
           prevInventory
             .map((invItem) =>
@@ -252,10 +251,19 @@ const HomePage = () => {
             )
             .filter((item) => item.quantity > 0)
         );
+
+        // Show the message
+        setCurrentAffirmation("Yummy!");
+        setShowTextbox(true);
+        
+        // Hide the message after 3 seconds
+        setTimeout(() => {
+          setShowTextbox(false);
+          setCurrentAffirmation("");
+        }, 3000);
       }
     } catch (error) {
       console.error("Error using item:", error);
-      // You might want to add error handling UI here
     }
   };
 
