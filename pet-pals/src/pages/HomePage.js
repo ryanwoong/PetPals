@@ -65,7 +65,7 @@ const HomePage = () => {
         <img
           src={catGif}
           alt="Cat"
-          style={{ position: 'absolute', bottom: '20px', left: '140px', cursor: 'pointer', width: '15rem', height: 'auto' }}
+          style={{ position: 'absolute', bottom: '20px', left: '140px', cursor: 'pointer', width: '20%', height: 'auto' }}
           onClick={handleCatClick}
         />
 
