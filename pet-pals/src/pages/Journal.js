@@ -81,7 +81,7 @@ const Journal = () => {
   return (
     <>
       <HomeNavBar />
-      <Box style={{ backgroundColor: '#FDF5E6', padding: '20px' }} pt="7rem">
+      <Box style={{ backgroundColor: '#FDF5E6', padding: '20px', height: '100vh' }} pt="7rem">
         <SimpleGrid 
           cols={2} 
           spacing={40}

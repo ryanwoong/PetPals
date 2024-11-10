@@ -1,34 +1,34 @@
 import React, { useState, useEffect } from 'react';
-import { Link, useNavigate, useLocation } from 'react-router-dom'; // Add useLocation
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import LogoImage from '../assets/logo.png';
 import { useAuth } from '../util/AuthContext';
-import { getFirestore, doc, getDoc } from 'firebase/firestore';
+import { getFirestore, doc, onSnapshot } from 'firebase/firestore';
 import { Image } from '@mantine/core';
 import coin from "../assets/Images/coin.png";
 
 const HomeNavBar = () => {
   const { logout, user } = useAuth();
   const navigate = useNavigate();
-  const location = useLocation(); // Get current location
+  const location = useLocation();
   const [userData, setUserData] = useState(null);
 
   useEffect(() => {
-    const fetchUserData = async () => {
-      if (user?.uid) {
-        const db = getFirestore();
-        const userRef = doc(db, 'users', user.uid);
-        try {
-          const docSnap = await getDoc(userRef);
-          if (docSnap.exists()) {
-            setUserData(docSnap.data());
-          }
-        } catch (error) {
-          console.error('Error fetching user data:', error);
-        }
-      }
-    };
+    if (!user?.uid) return;
 
-    fetchUserData();
+    const db = getFirestore();
+    const userRef = doc(db, 'users', user.uid);
+    
+    // Set up real-time listener for user data
+    const unsubscribe = onSnapshot(userRef, (docSnapshot) => {
+      if (docSnapshot.exists()) {
+        setUserData(docSnapshot.data());
+      }
+    }, (error) => {
+      console.error("Error listening to user data:", error);
+    });
+
+    // Cleanup listener on unmount
+    return () => unsubscribe();
   }, [user]);
 
   const styles = {
@@ -39,7 +39,7 @@ const HomeNavBar = () => {
       padding: '5px 40px',
       backgroundColor: '#FFCF9F',
       fontSize: '16px',
-      fontFamily:'Fuzzy Bubbles',
+      fontFamily: 'Fuzzy Bubbles',
       position: 'fixed',
       width: '100%',
       zIndex: 100,
@@ -139,7 +139,6 @@ const HomeNavBar = () => {
     }
   };
 
-  // Function to determine if a link is active
   const getLinkStyle = (path) => {
     return {
       ...styles.link,
@@ -163,7 +162,7 @@ const HomeNavBar = () => {
           <div style={styles.userStats}>
             <span style={styles.username}>{userData.username || "User"}</span>
             <div style={styles.statItem}>
-              <span style={styles.coinIcon}><Image src={coin}></Image></span>
+              <span style={styles.coinIcon}><Image src={coin} h="20px" w="20px" /></span>
               <span>{userData.coins || 0}</span>
             </div>
             <div style={styles.statItem}>
