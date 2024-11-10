@@ -48,7 +48,7 @@ const CheckInPage = () => {
             marginBottom: '15px',
           }}
         >
-          How do you feel today?
+          What's on your mind today?
         </Text>
 
         <TextInput
@@ -73,7 +73,7 @@ const CheckInPage = () => {
             marginTop: '15px'
           }}
         >
-          What's your mood like today?
+          How are you feeling today?
         </Text>
 
         <Group
