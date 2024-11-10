@@ -1,0 +1,38 @@
+body {
+    margin: 0;
+    background-color: #FFFAC3;
+}
+
+.textImage {
+    position: absolute;
+    top: 40%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 500px;
+    height: auto;
+}
+
+
+.catImage {
+    position: absolute;
+    left: 25%;
+    bottom: 10%;
+    height: auto;
+    width: 200px;
+}
+
+.navItem:hover {
+    color: #FFFAC3;
+    text-decoration: none;
+}
+
+.navItem {
+    color: black;
+    text-decoration: none;
+}
+
+.navItem:active,
+.navItem.active {
+    color: #FFCF9F;
+    text-decoration: none;
+}
