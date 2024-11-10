@@ -67,12 +67,13 @@ const InstructionsPage = () => {
             fontSize: '1.2rem',
             marginBottom: '20px',
             paddingLeft: '20px',
+            paddingRight: '30px'
           }}
         >
-          <List.Item>PetPals aims to provide a platform for those who want their feelings to be heard!</List.Item>
-          <List.Item>To earn currency, create a journal entry or comment positive responses on other users' posts.</List.Item>
+          <List.Item>PetPals aims to provide a safe space for those who want to express their thoughts!</List.Item>
+          <List.Item> To gain currency, complete daily journal entries or leave positive comments on other people's posts.</List.Item>
           <List.Item>More currency = more pets and accessories!</List.Item>
-          <List.Item>We want to remain a safe and welcoming environment, so please respect all people.</List.Item>
+          <List.Item>We want to remain a safe and welcoming environment for everyone, so please be mindful when writing comments!</List.Item>
         </List>
 
         <Text

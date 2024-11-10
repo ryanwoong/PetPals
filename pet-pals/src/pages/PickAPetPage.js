@@ -97,8 +97,8 @@ const PickAPetPage = () => {
                 src={monkeyGif}
                 alt={petNames.monkey}
                 style={{
-                  width: '100%',
-                  height: '100%',
+                  width: '100px',
+                  height: '100px',
                   objectFit: 'cover',
                   borderRadius: '10px',
                 }}
