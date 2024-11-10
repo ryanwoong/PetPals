@@ -7,6 +7,8 @@ import inventoryImage from "../assets/Images/backpack.png";
 import catGif from "../assets/Images/cat.gif";
 import snakeGif from "../assets/Images/snake.gif";
 import monkeyGif from "../assets/Images/monkey.gif";
+import hatCatGif from "../assets/Images/hat_cat.gif";
+import glassesCatGif from "../assets/Images/glasses_cat.gif";
 import glassesImage from "../assets/Images/glasses.png";
 import heartImage from "../assets/Images/heart.png";
 import kibbleImage from "../assets/Images/kibble.png";
@@ -24,7 +26,7 @@ const HomePage = () => {
   const [currentAffirmation, setCurrentAffirmation] = useState("");
   const [canShowNewAffirmation, setCanShowNewAffirmation] = useState(true);
   const [activeTab, setActiveTab] = useState("shop");
-  const [petImage, setPetImage] = useState(catGif); 
+  const [petImage, setPetImage] = useState(catGif);
   const [inventoryItems, setInventoryItems] = useState([]);
   const [shopItems, setShopItems] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
@@ -34,6 +36,178 @@ const HomePage = () => {
   const [userData, setUserData] = useState(null);
   const { user } = useAuth();
   const db = getFirestore();
+
+  const updatePetAppearance = async (itemId) => {
+    if (!user?.uid) return;
+    
+    try {
+      // Map item IDs to their corresponding images
+      const itemToImageMap = {
+        '9gVOZKK7KXwHUWL39T4l': hatCatGif, // Hat
+        'yavJOOQYYFxKra1tk4KQ': glassesCatGif, // Glasses
+      };
+      
+      if (itemToImageMap[itemId]) {
+        setPetImage(itemToImageMap[itemId]);
+      }
+    } catch (error) {
+      console.error('Error updating pet appearance:', error);
+    }
+  };
+
+  const updateUserCoins = async (newCoins) => {
+    if (!user?.uid) return;
+
+    const userRef = doc(db, "users", user.uid);
+    try {
+      await updateDoc(userRef, { coins: newCoins });
+      setUserData((prev) => ({ ...prev, coins: newCoins }));
+    } catch (error) {
+      console.error("Error updating user coins:", error);
+      throw error;
+    }
+  };
+
+  const handleBuyItem = async (item) => {
+    if (!userData || userData.coins < item.price || !user?.uid) return;
+
+    try {
+      const newBalance = userData.coins - item.price;
+      await updateUserCoins(newBalance);
+
+      const inventoryRef = collection(db, 'users', user.uid, 'inventory');
+      const q = query(inventoryRef, where('id', '==', item.id));
+      const querySnapshot = await getDocs(q);
+
+      if (!querySnapshot.empty) {
+        const inventoryDoc = querySnapshot.docs[0];
+        const currentQuantity = inventoryDoc.data().quantity;
+        await updateDoc(doc(inventoryRef, inventoryDoc.id), {
+          quantity: currentQuantity + 1,
+        });
+      } else {
+        await addDoc(inventoryRef, {
+          id: item.id,
+          quantity: 1,
+        });
+      }
+
+      
+
+      setInventoryItems((prevInventory) => {
+        const existingItem = prevInventory.find((invItem) => invItem.id === item.id);
+        if (existingItem) {
+          return prevInventory.map((invItem) =>
+            invItem.id === item.id
+              ? { ...invItem, quantity: invItem.quantity + 1 }
+              : invItem
+          );
+        } else {
+          return [
+            ...prevInventory,
+            {
+              id: item.id,
+              title: item.title,
+              quantity: 1,
+              image: item.image,
+            },
+          ];
+        }
+      });
+    } catch (error) {
+      console.error('Error purchasing item:', error);
+    }
+  };
+
+  const handleUseItem = async (item) => {
+    if (!user?.uid) return;
+
+    try {
+      const inventoryRef = collection(db, "users", user.uid, "inventory");
+      const q = query(inventoryRef, where("id", "==", item.id));
+      const querySnapshot = await getDocs(q);
+
+      if (!querySnapshot.empty) {
+        const inventoryDoc = querySnapshot.docs[0];
+        const currentQuantity = inventoryDoc.data().quantity;
+
+        // Update database first
+        if (currentQuantity <= 1) {
+          await deleteDoc(doc(inventoryRef, inventoryDoc.id));
+        } else {
+          await updateDoc(doc(inventoryRef, inventoryDoc.id), {
+            quantity: currentQuantity - 1,
+          });
+        }
+
+        // Update pet appearance if it's a hat or glasses
+      if (item.id === '9gVOZKK7KXwHUWL39T4l' || item.id === 'yavJOOQYYFxKra1tk4KQ') {
+        await updatePetAppearance(item.id);
+      }
+
+        // Update local inventory state
+        setInventoryItems((prevInventory) =>
+          prevInventory
+            .map((invItem) =>
+              invItem.id === item.id
+                ? {
+                    ...invItem,
+                    quantity: invItem.quantity - 1,
+                    isHovered: false,
+                  }
+                : invItem
+            )
+            .filter((item) => item.quantity > 0)
+        );
+
+        // Only show "Yummy!" message for food items (kibble)
+        if (item.id === 'egyc7nx9JjsUYlvK4OF6') { // Kibble ID
+          setCurrentAffirmation("Yummy!");
+          setShowTextbox(true);
+          
+          setTimeout(() => {
+            setShowTextbox(false);
+            setCurrentAffirmation("");
+          }, 3000);
+        }
+      }
+    } catch (error) {
+      console.error("Error using item:", error);
+    }
+  };
+
+  const determineItemImage = (itemId) => {
+    const imageMap = {
+      egyc7nx9JjsUYlvK4OF6: kibbleImage,
+      "9gVOZKK7KXwHUWL39T4l": hatImage,
+      yavJOOQYYFxKra1tk4KQ: glassesImage,
+    };
+    return imageMap[itemId] || kibbleImage;
+  };
+
+  const handleCatClick = () => {
+    const newHeart = { id: Date.now() };
+    setHearts((prevHearts) => [...prevHearts, newHeart]);
+    setTimeout(() => {
+      setHearts((prevHearts) => prevHearts.filter((heart) => heart.id !== newHeart.id));
+    }, 1500);
+
+    if (canShowNewAffirmation) {
+      const randomIndex = Math.floor(Math.random() * affirmationsData.affirmations.length);
+      const randomAffirmation = affirmationsData.affirmations[randomIndex];
+      setCurrentAffirmation(randomAffirmation);
+      setShowTextbox(true);
+      setCanShowNewAffirmation(false);
+
+      setTimeout(() => {
+        setShowTextbox(false);
+        setCurrentAffirmation("");
+        setTimeout(() => {
+          setCanShowNewAffirmation(true);
+        }, 500);
+      }, 3000);
+    }
+  };
 
   // Set up real-time listener for user data
   useEffect(() => {
@@ -45,6 +219,7 @@ const HomePage = () => {
       async (docSnapshot) => {
         if (docSnapshot.exists()) {
           const userData = docSnapshot.data();
+          setUserData(userData);
         }
       },
       (error) => {
@@ -58,7 +233,6 @@ const HomePage = () => {
       inventoryRef,
       async (snapshot) => {
         try {
-          const inventoryData = [];
           const itemPromises = snapshot.docs.map(async (doc) => {
             const itemRef = doc.ref.parent.parent.parent.collection("items").doc(doc.data().id);
             const itemDoc = await getDoc(itemRef);
@@ -85,44 +259,11 @@ const HomePage = () => {
       }
     );
 
-    const loadPetImage = async () => {
-      try {
-        // Get the first document from the 'pets' collection
-        const petsCollection = collection(db, "pets");
-        const petDocs = await getDocs(petsCollection);
-
-        if (!petDocs.empty) {
-          const firstPetDoc = petDocs.docs[0];
-          const petData = firstPetDoc.data();
-          const petType = petData.type;
-
-          console.log("Pet Type:", petType);
-
-          // Set pet image based on the pet type
-          if (petType === "cat") {
-            setPetImage(catGif);
-          } else if (petType === "monkey") {
-            setPetImage(monkeyGif);
-          } else if (petType === "snake") {
-            setPetImage(snakeGif);
-          } else {
-            setPetImage(null); // Default case if no match
-          }
-        }
-      } catch (error) {
-        console.error("Error retrieving pet document:", error);
-      }
-    };
-
-    loadPetImage();
-
-    // Cleanup listeners on unmount
     return () => {
       unsubscribeUser();
       unsubscribeInventory();
     };
   }, [user, db]);
-
 
   // Fetch shop items
   useEffect(() => {
@@ -148,161 +289,6 @@ const HomePage = () => {
     fetchShopItems();
   }, []);
 
-  const determineItemImage = (itemId) => {
-    const imageMap = {
-      egyc7nx9JjsUYlvK4OF6: kibbleImage,
-      "9gVOZKK7KXwHUWL39T4l": hatImage,
-      yavJOOQYYFxKra1tk4KQ: glassesImage,
-    };
-    return imageMap[itemId] || kibbleImage;
-  };
-
-  // Handle click on the cat image
-  const handleCatClick = () => {
-    // Hearts can always be created
-    const newHeart = { id: Date.now() };
-    setHearts((prevHearts) => [...prevHearts, newHeart]);
-    setTimeout(() => {
-      setHearts((prevHearts) => prevHearts.filter((heart) => heart.id !== newHeart.id));
-    }, 1500); // Remove heart after animation
-
-    // Only show new affirmation if allowed
-    if (canShowNewAffirmation) {
-      // Get random affirmation
-      const randomIndex = Math.floor(Math.random() * affirmationsData.affirmations.length);
-      const randomAffirmation = affirmationsData.affirmations[randomIndex];
-      setCurrentAffirmation(randomAffirmation);
-      setShowTextbox(true);
-      setCanShowNewAffirmation(false);
-
-      // Reset after 3 seconds
-      setTimeout(() => {
-        setShowTextbox(false);
-        setCurrentAffirmation("");
-        // Add a small delay after hiding before allowing next affirmation
-        setTimeout(() => {
-          setCanShowNewAffirmation(true);
-        }, 500);
-      }, 3000);
-    }
-  };
-
-  const updateUserCoins = async (newCoins) => {
-    if (!user?.uid) return;
-
-    const userRef = doc(db, "users", user.uid);
-    try {
-      await updateDoc(userRef, { coins: newCoins });
-      setUserData((prev) => ({ ...prev, coins: newCoins }));
-    } catch (error) {
-      console.error("Error updating user coins:", error);
-      throw error;
-    }
-  };
-
-  const handleBuyItem = async (item) => {
-    if (!userData || userData.coins < item.price || !user?.uid) return;
-
-    try {
-      const newBalance = userData.coins - item.price;
-
-      // Update user's coins in Firestore
-      await updateUserCoins(newBalance);
-
-      // Add item to inventory
-      const inventoryRef = collection(db, "users", user.uid, "inventory");
-      const q = query(inventoryRef, where("id", "==", item.id));
-      const querySnapshot = await getDocs(q);
-
-      if (!querySnapshot.empty) {
-        // Item exists, update quantity
-        const inventoryDoc = querySnapshot.docs[0];
-        const currentQuantity = inventoryDoc.data().quantity;
-        await updateDoc(doc(inventoryRef, inventoryDoc.id), {
-          quantity: currentQuantity + 1,
-        });
-      } else {
-        // Add new item
-        await addDoc(inventoryRef, {
-          id: item.id,
-          quantity: 1,
-        });
-      }
-
-      // Update local inventory state
-      setInventoryItems((prevInventory) => {
-        const existingItem = prevInventory.find((invItem) => invItem.id === item.id);
-        if (existingItem) {
-          return prevInventory.map((invItem) => (invItem.id === item.id ? { ...invItem, quantity: invItem.quantity + 1 } : invItem));
-        } else {
-          return [
-            ...prevInventory,
-            {
-              id: item.id,
-              title: item.title,
-              quantity: 1,
-              image: item.image,
-            },
-          ];
-        }
-      });
-    } catch (error) {
-      console.error("Error purchasing item:", error);
-      // You might want to add error handling UI here
-    }
-  };
-
-  const handleUseItem = async (item) => {
-    if (!user?.uid) return;
-
-    try {
-      const inventoryRef = collection(db, "users", user.uid, "inventory");
-      const q = query(inventoryRef, where("id", "==", item.id));
-      const querySnapshot = await getDocs(q);
-
-      if (!querySnapshot.empty) {
-        const inventoryDoc = querySnapshot.docs[0];
-        const currentQuantity = inventoryDoc.data().quantity;
-
-        // Update database first
-        if (currentQuantity <= 1) {
-          await deleteDoc(doc(inventoryRef, inventoryDoc.id));
-        } else {
-          await updateDoc(doc(inventoryRef, inventoryDoc.id), {
-            quantity: currentQuantity - 1,
-          });
-        }
-
-        // Update local inventory state
-        setInventoryItems((prevInventory) =>
-          prevInventory
-            .map((invItem) =>
-              invItem.id === item.id
-                ? {
-                    ...invItem,
-                    quantity: invItem.quantity - 1,
-                    isHovered: false,
-                  }
-                : invItem
-            )
-            .filter((item) => item.quantity > 0)
-        );
-
-        // Show the message
-        setCurrentAffirmation("Yummy!");
-        setShowTextbox(true);
-        
-        // Hide the message after 3 seconds
-        setTimeout(() => {
-          setShowTextbox(false);
-          setCurrentAffirmation("");
-        }, 3000);
-      }
-    } catch (error) {
-      console.error("Error using item:", error);
-    }
-  };
-
   return (
     <>
       <HomeNavBar userCoins={userData?.coins} />
@@ -321,7 +307,7 @@ const HomePage = () => {
       >
         <img
           src={petImage}
-          alt="Cat"
+          alt="Pet"
           style={{
             position: "absolute",
             bottom: "20px",
@@ -350,11 +336,11 @@ const HomePage = () => {
         ))}
 
         <style>{`
-    @keyframes slide-up {
-      0% { opacity: 1; transform: translateY(0); }
-      100% { opacity: 0; transform: translateY(-50px); }
-    }
-  `}</style>
+          @keyframes slide-up {
+            0% { opacity: 1; transform: translateY(0); }
+            100% { opacity: 0; transform: translateY(-50px); }
+          }
+        `}</style>
 
         <Transition
           mounted={showTextbox}
@@ -492,7 +478,6 @@ const HomePage = () => {
             style={{ marginBottom: "20px" }}
           />
 
-          {/* Shop Items */}
           {activeTab === "shop" && (
             <Grid>
               {isShopLoading ? (
@@ -576,7 +561,6 @@ const HomePage = () => {
             </Grid>
           )}
 
-          {/* Inventory Items */}
           {activeTab === "inventory" && (
             <Grid>
               {isLoading ? (
