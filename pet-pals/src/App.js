@@ -1,7 +1,8 @@
 import React from 'react';
-import HomePage from './pages/HomePage';
-import RegisterPage from './pages/RegisterPage';
-import { Button } from '@mantine/core';
+import PickAPetPage from './pages/PickAPetPage.js'
+import InstructionsPage from './pages/InstructionsPage.js'
+import CheckInPage from './pages/CheckInPage.js';
+
 import { Routes, Route } from 'react-router';
 
 function App() {
@@ -13,8 +14,9 @@ function App() {
     // </div>
     <>
       <Routes>
-        <Route path="/" exact element={ <HomePage /> } />
-        <Route path="/register" exact element={ <RegisterPage /> } />
+        <Route path="/" exact element={<InstructionsPage/>} />
+        <Route path="/CheckInPage" exact element={ <CheckInPage /> } />
+        <Route path="/PickAPet" exact element={ <PickAPetPage /> } />
       </Routes>
     
     </>
