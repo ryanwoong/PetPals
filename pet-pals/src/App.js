@@ -6,7 +6,6 @@ import InstructionsPage from './pages/InstructionsPage'
 import CheckInPage from './pages/CheckInPage';
 import CommunityFeed from './pages/CommunityFeed';
 import Journal from './pages/Journal';
-import RegisterPage from './pages/RegisterPage';
 
 import AuthPage from './pages/AuthPage';
 import { AuthProvider } from './util/AuthContext';
@@ -55,14 +54,6 @@ function App() {
                 <AuthPage />
               </PublicRoute>
             } 
-          />
-          <Route
-            path="/register"
-            element={
-              <PublicRoute>
-                <RegisterPage />
-              </PublicRoute>
-            }
           />
 
           {/* Protected routes - require authentication */}
