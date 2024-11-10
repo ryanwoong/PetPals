@@ -9,15 +9,13 @@ import {
   Container,
 } from "@mantine/core";
 import AuthNavBar from "../components/AuthNavBar";
-import {
-  createUserWithEmailAndPassword,
-  signInWithEmailAndPassword,
-  signInWithPopup,
-} from "firebase/auth";
+import { signInWithPopup } from "firebase/auth";
 import { auth, googleProvider } from "../firebase";
+import { useAuth } from "../util/AuthContext"; // Import the auth context hook
 
 const AuthPage = () => {
   const navigate = useNavigate();
+  const { login, register } = useAuth(); // Get login and register functions from context
   const [method, setMethod] = useState("signIn");
   const [error, setError] = useState("");
 
@@ -45,7 +43,8 @@ const AuthPage = () => {
 
     try {
       if (method === "signIn") {
-        await signInWithEmailAndPassword(auth, form.email, form.password);
+        // Use the login function from context
+        await login(form.email, form.password);
         alert('Login successful!');
         navigate("/pages/HomePage", { replace: true });
       } else {
@@ -53,13 +52,32 @@ const AuthPage = () => {
           setError("Passwords do not match");
           return;
         }
-        
-        await createUserWithEmailAndPassword(auth, form.email, form.password);
+        // Use the register function from context
+        await register(form.email, form.password);
         alert('Registration successful!');
         navigate("/pages/Instruction", { replace: true });
       }
     } catch (err) {
-      setError(err.message); // Display Firebase error messages
+      // Handle specific Firebase errors with more user-friendly messages
+      switch (err.code) {
+        case 'auth/email-already-in-use':
+          setError('This email is already registered');
+          break;
+        case 'auth/invalid-email':
+          setError('Invalid email address');
+          break;
+        case 'auth/weak-password':
+          setError('Password should be at least 6 characters');
+          break;
+        case 'auth/user-not-found':
+          setError('No account found with this email');
+          break;
+        case 'auth/wrong-password':
+          setError('Incorrect password');
+          break;
+        default:
+          setError(err.message);
+      }
     }
   };
 
@@ -70,7 +88,16 @@ const AuthPage = () => {
       alert('Google Sign-In successful!');
       navigate("/pages/HomePage", { replace: true });
     } catch (err) {
-      setError(err.message); // Display error if Google sign-in fails
+      switch (err.code) {
+        case 'auth/popup-closed-by-user':
+          setError('Sign-in popup was closed');
+          break;
+        case 'auth/popup-blocked':
+          setError('Popup was blocked by the browser');
+          break;
+        default:
+          setError('Failed to sign in with Google');
+      }
     }
   };
 
@@ -78,7 +105,7 @@ const AuthPage = () => {
     <Container size={420} my={40}>
       <AuthNavBar method={method} toggleMethod={toggleMethod} />
 
-      <Title align="center" mb="sm" style={{ fontFamily: "'Fuzzy Bubbles'" }}>
+      <Title align="center" mb="sm" mt="md" style={{ fontFamily: "'Fuzzy Bubbles'" }}>
         {method === "signIn" ? "Log In" : "Register"}
       </Title>
 
