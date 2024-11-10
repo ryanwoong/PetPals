@@ -1,12 +1,13 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import HomePage from './pages/HomePage';
-import RegisterPage from './pages/RegisterPage';
 import PickAPetPage from './pages/PickAPetPage'
 import InstructionsPage from './pages/InstructionsPage'
 import CheckInPage from './pages/CheckInPage';
 import CommunityFeed from './pages/CommunityFeed';
 import Journal from './pages/Journal';
+import RegisterPage from './pages/RegisterPage';
+
 import AuthPage from './pages/AuthPage';
 import { AuthProvider } from './util/AuthContext';
 import { useAuth } from './util/AuthContext'; // Add this import
