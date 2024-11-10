@@ -1,61 +1,115 @@
 import React, { useState, useEffect } from 'react';
-import { Text, Box, Button, Textarea } from '@mantine/core';
+import { Text, Box, Button, Textarea, Loader } from '@mantine/core';
 import { useNavigate } from 'react-router-dom';
-import HomeNavBar from '../components/HomeNavBar'; // Assuming HomeNavBar is in the components folder
-import { BiComment, BiExpandAlt, BiCollapseAlt } from 'react-icons/bi'; // Import the icons
+import HomeNavBar from '../components/HomeNavBar';
+import { BiComment, BiExpandAlt, BiCollapseAlt } from 'react-icons/bi';
+import axios from 'axios';
+import { useAuth } from '../util/AuthContext';
+import { addComment } from '../functions/database/addComment';
+import { fetchComments } from '../functions/database/fetchComments';
 
 const CommunityFeed = () => {
-  const [entries, setEntries] = useState([]); // Stores all journal entries
-  const [comments, setComments] = useState({}); // Store comments per entry
-  const [expanded, setExpanded] = useState({}); // Track expanded posts
-  const [showAddComment, setShowAddComment] = useState({}); // Track add comment visibility
+  const [entries, setEntries] = useState([]);
+  const [comments, setComments] = useState({});
+  const [expanded, setExpanded] = useState({});
+  const [showAddComment, setShowAddComment] = useState({});
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [commentLoading, setCommentLoading] = useState({});
   const navigate = useNavigate();
+  const { user } = useAuth();
 
-  // Simulate fetching entries from a database or API
   useEffect(() => {
-    const fetchedEntries = [
-      {
-        title: 'A Beautiful Day',
-        text: 'I had a great day today! Went for a walk in the park and spent time with friends. It was an amazing experience and I really enjoyed it.',
-        date: new Date(),
-        isPublic: true,
-      },
-      {
-        title: 'My First Journal',
-        text: 'This is my first entry in the journal. Feeling excited! I have so much to share about my experiences, thoughts, and adventures!',
-        date: new Date(),
-        isPublic: true,
-      },
-      {
-        title: 'Private Entry',
-        text: 'This is a private entry, so it should not be shown in the community.',
-        date: new Date(),
-        isPublic: false,
-      },
-    ];
+    const fetchPosts = async () => {
+      try {
+        setLoading(true);
+        const response = await axios.get('http://localhost:5100/posts/public');
+        console.log('Raw server response:', response.data);
 
-    // Filter entries to only show public ones
-    const publicEntries = fetchedEntries.filter(entry => entry.isPublic);
+        const formattedPosts = response.data.posts.map(post => ({
+          id: post.id || Math.random().toString(),
+          title: post.title || 'Untitled',
+          text: post.body || '',
+          date: post.dateCreated || new Date().toISOString(),
+          authorId: post.userId || '',
+          isPublic: true
+        }));
 
-    setEntries(publicEntries); // Set the filtered entries
+        console.log('Formatted posts:', formattedPosts);
+        setEntries(formattedPosts);
+        setError(null);
+      } catch (error) {
+        console.error('Error fetching posts:', error);
+        setError('Failed to load posts. Please try again later.');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchPosts();
   }, []);
 
-  // Handle new comment submission
-  const handleCommentSubmit = (entryId, commentText) => {
-    if (commentText.trim() === '') return; // Do not submit empty comments
+  useEffect(() => {
+    const loadComments = async (userId, postId) => {
+      if (!expanded[postId]) return;
+      
+      try {
+        setCommentLoading(prev => ({ ...prev, [postId]: true }));
+        const fetchedComments = await fetchComments(userId, postId);
+        setComments(prev => ({
+          ...prev,
+          [postId]: fetchedComments
+        }));
+      } catch (error) {
+        console.error('Error loading comments:', error);
+      } finally {
+        setCommentLoading(prev => ({ ...prev, [postId]: false }));
+      }
+    };
 
-    // Add a new comment to the comments object
-    setComments(prevComments => ({
-      ...prevComments,
-      [entryId]: [...(prevComments[entryId] || []), commentText],
-    }));
+    entries.forEach(entry => {
+      if (expanded[entry.id]) {
+        loadComments(entry.authorId, entry.id);
+      }
+    });
+  }, [expanded, entries]);
 
-    // Hide the comment input and clear the input field after submission
-    setShowAddComment(prev => ({ ...prev, [entryId]: false }));
-    document.querySelector(`#comment-input-${entryId}`).value = ''; // Clear the input field
+  const handleCommentSubmit = async (entryId, commentText) => {
+    if (!user) {
+      alert('Please log in to comment');
+      return;
+    }
+    
+    if (commentText.trim() === '') return;
+
+    try {
+      setCommentLoading(prev => ({ ...prev, [entryId]: true }));
+      
+      const post = entries.find(entry => entry.id === entryId);
+      
+      await addComment({
+        postId: entryId,
+        userId: post.authorId,
+        authorId: user.uid,
+        commentBody: commentText
+      });
+
+      const updatedComments = await fetchComments(post.authorId, entryId);
+      setComments(prev => ({
+        ...prev,
+        [entryId]: updatedComments
+      }));
+
+      setShowAddComment(prev => ({ ...prev, [entryId]: false }));
+      document.querySelector(`#comment-input-${entryId}`).value = '';
+
+    } catch (error) {
+      console.error('Error submitting comment:', error);
+    } finally {
+      setCommentLoading(prev => ({ ...prev, [entryId]: false }));
+    }
   };
 
-  // Toggle post expansion
   const handleToggleExpand = (entryId) => {
     setExpanded(prev => ({
       ...prev,
@@ -63,8 +117,11 @@ const CommunityFeed = () => {
     }));
   };
 
-  // Show the comment input
   const handleToggleAddComment = (entryId) => {
+    if (!user) {
+      alert('Please log in to comment');
+      return;
+    }
     setShowAddComment(prev => ({
       ...prev,
       [entryId]: !prev[entryId],
@@ -73,23 +130,21 @@ const CommunityFeed = () => {
 
   return (
     <>
-      <HomeNavBar /> {/* Including the navigation bar at the top */}
-
+      <HomeNavBar />
       <div style={{
         display: 'flex',
         justifyContent: 'center',
-        alignItems: 'center',
-        height: '100vh',
+        alignItems: 'flex-start',
+        minHeight: '100vh',
         backgroundColor: '#FDF5E6',
+        paddingTop: '7rem',
       }}>
-        {/* Centered Section: Community Entries */}
         <Box
           style={{
             padding: '20px',
             overflowY: 'auto',
-            marginRight: '20px',
             width: '100%',
-            maxWidth: '800px', // Center the content with a max width
+            maxWidth: '800px',
           }}
         >
           <Text
@@ -105,17 +160,27 @@ const CommunityFeed = () => {
             Community Entries
           </Text>
 
-          {/* Render entries */}
-          {entries.length === 0 ? (
-            <Text style={{ fontFamily: "'Fuzzy Bubbles', sans-serif", color: '#333', fontSize: '1.2em', textAlign: 'center' }}>
+          {loading ? (
+            <Box style={{ textAlign: 'center', padding: '20px' }}>
+              <Loader size="xl" />
+            </Box>
+          ) : error ? (
+            <Text style={{ textAlign: 'center', color: 'red' }}>{error}</Text>
+          ) : entries.length === 0 ? (
+            <Text style={{ 
+              fontFamily: "'Fuzzy Bubbles', sans-serif", 
+              color: '#333', 
+              fontSize: '1.2em', 
+              textAlign: 'center' 
+            }}>
               No public entries available.
             </Text>
           ) : (
-            entries.map((entry, index) => (
+            entries.map((entry) => (
               <Box
-                key={index}
+                key={entry.id}
                 style={{
-                  backgroundColor: '#FFCF9F',  // Orange background for each entry
+                  backgroundColor: '#FFCF9F',
                   padding: '15px',
                   borderRadius: '10px',
                   marginBottom: '10px',
@@ -131,42 +196,38 @@ const CommunityFeed = () => {
                     marginBottom: '5px',
                   }}
                 >
-                  {entry.title} {/* Display the title */}
+                  {entry.title}
                 </Text>
 
-                {/* Display preview of the text in a list format */}
-                {!expanded[index] && (
+                {!expanded[entry.id] && (
                   <Text
                     style={{
                       fontFamily: "'Fuzzy Bubbles', sans-serif",
                       color: '#333',
                       fontSize: '1.2em',
                       marginBottom: '5px',
-                      wordWrap: 'break-word',  // Wrap long words inside the box
+                      wordWrap: 'break-word',
                     }}
                   >
-                    {entry.text.length > 70 ? entry.text.substring(0, 70) + '...' : entry.text} {/* Show a preview */}
+                    {entry.text && entry.text.length > 70 ? entry.text.substring(0, 70) + '...' : entry.text}
                   </Text>
                 )}
 
-                {/* Right-aligned Icon Buttons */}
                 <Box style={{ display: 'flex', justifyContent: 'flex-end' }}>
-                  {/* Expand/Collapse Icon */}
                   <Button
                     variant="subtle"
-                    onClick={() => handleToggleExpand(index)}
+                    onClick={() => handleToggleExpand(entry.id)}
                     style={{
                       backgroundColor: 'transparent',
                       borderColor: 'transparent',
                       color: '#333',
                     }}
                   >
-                    {expanded[index] ? <BiCollapseAlt size={24} /> : <BiExpandAlt size={24} />}
+                    {expanded[entry.id] ? <BiCollapseAlt size={24} /> : <BiExpandAlt size={24} />}
                   </Button>
                 </Box>
 
-                {/* Expanded Post View */}
-                {expanded[index] && (
+                {expanded[entry.id] && (
                   <Box
                     style={{
                       marginTop: '20px',
@@ -174,7 +235,6 @@ const CommunityFeed = () => {
                       borderTop: '2px solid #333',
                     }}
                   >
-                    {/* Full text when expanded (only show when expanded) */}
                     <Text
                       style={{
                         fontFamily: "'Fuzzy Bubbles', sans-serif",
@@ -183,7 +243,7 @@ const CommunityFeed = () => {
                         marginBottom: '10px',
                       }}
                     >
-                      {entry.text} {/* Show full text when expanded */}
+                      {entry.text || 'No content'}
                     </Text>
 
                     <Text
@@ -194,10 +254,9 @@ const CommunityFeed = () => {
                         fontStyle: 'italic',
                       }}
                     >
-                      {new Date(entry.date).toLocaleString()} {/* Display date in a readable format */}
+                      {new Date(entry.date).toLocaleString()}
                     </Text>
 
-                    {/* Comment Section */}
                     <Box
                       style={{
                         marginTop: '20px',
@@ -214,13 +273,12 @@ const CommunityFeed = () => {
                           marginBottom: '10px',
                         }}
                       >
-                        Comments
+                        Comments {commentLoading[entry.id] && <Loader size="sm" />}
                       </Text>
 
-                      {/* Comment Button */}
                       <Button
                         variant="subtle"
-                        onClick={() => handleToggleAddComment(index)}
+                        onClick={() => handleToggleAddComment(entry.id)}
                         style={{
                           backgroundColor: 'transparent',
                           borderColor: 'transparent',
@@ -231,15 +289,14 @@ const CommunityFeed = () => {
                       </Button>
                     </Box>
 
-                    {/* Render Comments for each entry */}
-                    {(comments[index] || []).map((comment, commentIndex) => (
+                    {(comments[entry.id] || []).map((comment) => (
                       <Box
-                        key={commentIndex}
+                        key={comment.id}
                         style={{
                           marginBottom: '15px',
                           padding: '10px',
                           borderRadius: '8px',
-                          backgroundColor: '#FFD9A4',  // Lighter orange background
+                          backgroundColor: '#FFD9A4',
                           boxShadow: '0px 4px 8px rgba(0, 0, 0, 0.1)',
                         }}
                       >
@@ -251,18 +308,29 @@ const CommunityFeed = () => {
                             wordWrap: 'break-word',
                           }}
                         >
-                          {comment}
+                          {comment.body}
+                        </Text>
+                        <Text
+                          style={{
+                            fontFamily: "'Fuzzy Bubbles', sans-serif",
+                            color: '#666',
+                            fontSize: '0.9em',
+                            fontStyle: 'italic',
+                            marginTop: '5px',
+                          }}
+                        >
+                          {new Date(comment.dateCreated).toLocaleString()}
                         </Text>
                       </Box>
                     ))}
 
-                    {/* Add Comment Input */}
-                    {showAddComment[index] && (
+                    {showAddComment[entry.id] && (
                       <Box style={{ marginTop: '10px' }}>
                         <Textarea
-                          id={`comment-input-${index}`}  // Assign unique id to each textarea
+                          id={`comment-input-${entry.id}`}
                           placeholder="Write your comment..."
                           minRows={3}
+                          disabled={commentLoading[entry.id]}
                           style={{
                             width: '100%',
                             fontSize: '1em',
@@ -272,7 +340,11 @@ const CommunityFeed = () => {
                           }}
                         />
                         <Button
-                          onClick={() => handleCommentSubmit(index, document.querySelector(`#comment-input-${index}`).value)}
+                          onClick={() => handleCommentSubmit(
+                            entry.id,
+                            document.querySelector(`#comment-input-${entry.id}`).value
+                          )}
+                          disabled={commentLoading[entry.id]}
                           style={{
                             backgroundColor: '#FFFAC3',
                             borderColor: '#FFFAC3',                              
@@ -280,7 +352,7 @@ const CommunityFeed = () => {
                             width: '100%',
                           }}
                         >
-                          Send
+                          {commentLoading[entry.id] ? 'Sending...' : 'Send'}
                         </Button>
                       </Box>
                     )}
