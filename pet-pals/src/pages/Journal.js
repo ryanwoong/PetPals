@@ -1,230 +1,304 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Text, Button, Container, Group, Box, Switch, TextInput, Textarea } from '@mantine/core';  // Correct imports
-import HomeNavBar from '../components/HomeNavBar'; // Assuming HomeNavBar is in the components folder
+import {
+  Text,
+  Button,
+  SimpleGrid,
+  Box,
+  Switch,
+  TextInput,
+  Textarea,
+  Group,
+  Loader,
+} from '@mantine/core';
+import HomeNavBar from '../components/HomeNavBar';
+import { addEntry } from '../functions/database/addEntry';
+import { fetchUserPosts } from '../functions/database/fetchUserPosts';
+import { useAuth } from '../util/AuthContext';
 
 const Journal = () => {
-  const [title, setTitle] = useState('');  // Current journal entry title
-  const [entry, setEntry] = useState('');  // Current journal entry input
-  const [isPublic, setIsPublic] = useState(false);  // Switch for public entry
-  const [entries, setEntries] = useState([]);  // Stores all journal entries
+  const [title, setTitle] = useState('');
+  const [entry, setEntry] = useState('');
+  const [isPublic, setIsPublic] = useState(false);
+  const [entries, setEntries] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const navigate = useNavigate();
+  const { user } = useAuth();
 
-  const handleNextClick = () => {
-    // Create a new journal entry and add it to the list
-    const newEntry = {
-      title: title,
-      text: entry,
-      date: new Date(),
-      isPublic: isPublic,
+  // Fetch user's posts when component mounts
+  useEffect(() => {
+    const loadUserPosts = async () => {
+      if (!user) return;
+      
+      try {
+        setLoading(true);
+        const posts = await fetchUserPosts(user.uid);
+        setEntries(posts);
+        setError(null);
+      } catch (err) {
+        console.error('Error loading posts:', err);
+        setError('Failed to load your entries. Please try again later.');
+      } finally {
+        setLoading(false);
+      }
     };
 
-    // Add new entry to the list, sorted by date
-    setEntries([newEntry, ...entries].sort((a, b) => b.date - a.date));
+    loadUserPosts();
+  }, [user]);
 
-    // Clear the input fields after saving the entry
-    setTitle('');
-    setEntry('');
-    setIsPublic(false);
+  const handleNextClick = async () => {
+    if (!entry.trim()) {
+      console.log('Entry text is required');
+      return;
+    }
+
+    try {
+      console.log('Submitting entry...'); // Debug log
+      const result = await addEntry({
+        text: entry,
+        title: title,
+        isPublic: isPublic,
+        authorId: user.uid
+      });
+
+      console.log('Entry submitted:', result); // Debug log
+
+      // Fetch updated posts
+      const updatedPosts = await fetchUserPosts(user.uid);
+      setEntries(updatedPosts);
+      
+      // Clear form
+      setTitle('');
+      setEntry('');
+      setIsPublic(false);
+
+    } catch (error) {
+      console.error('Error creating entry:', error);
+    }
   };
 
   return (
     <>
-      <HomeNavBar />  {/* Including the navigation bar at the top */}
-
-      <div style={{ position: 'relative', height: '100vh', backgroundColor: '#FDF5E6', display: 'flex' }}>
-        {/* Left Section: Previous Entries */}
-        <Box
-          style={{
-            flex: 1,  // Takes up remaining space on the left side
-            padding: '20px',
-            overflowY: 'auto',  // Make it scrollable if the list is long
-            marginRight: '20px',
-
-          }}
+      <HomeNavBar />
+      <Box style={{ backgroundColor: '#FDF5E6', padding: '20px' }} pt="7rem">
+        <SimpleGrid 
+          cols={2} 
+          spacing={40}
+          breakpoints={[
+            { maxWidth: 'md', cols: 1 }
+          ]}
         >
-          <Text
+          {/* Left Column: Previous Entries */}
+          <Box
             style={{
-              fontFamily: "'Fuzzy Bubbles', sans-serif",
-              color: '#333',
-              fontSize: '1.8em',
-              fontWeight: 'bold',
-              marginBottom: '15px',
-              marginTop: '150px',
+              padding: '20px',
+              overflowY: 'auto',
+              maxHeight: 'calc(100vh - 100px)',
             }}
           >
-            Previous Entries
-          </Text>
-
-          {/* Render entries */}
-          {entries.map((entry, index) => (
-            <Box
-              key={index}
+            <Text
               style={{
-                backgroundColor: '#FFCF9F',  // Orange background for each entry
-                padding: '15px',
-                borderRadius: '10px',
-                marginBottom: '10px',
-                boxShadow: '0px 6px 12px rgba(0, 0, 0, 0.15)',
-                width: '100%', // Ensure entry takes up full width of the container
-                maxWidth: '600px', // Fixed max-width for each entry
+                fontFamily: "'Fuzzy Bubbles', sans-serif",
+                color: '#333',
+                fontSize: '1.8em',
+                fontWeight: 'bold',
+                marginBottom: '15px',
               }}
             >
-              <Text
-                style={{
-                  fontFamily: "'Fuzzy Bubbles', sans-serif",
-                  color: '#333',
-                  fontSize: '1.5em',
-                  fontWeight: 'bold',
-                  marginBottom: '5px',
-                }}
-              >
-                {entry.title} {/* Display the title */}
+              Previous Entries
+            </Text>
+
+            {loading ? (
+              <Box style={{ textAlign: 'center', padding: '20px' }}>
+                <Loader size="xl" />
+              </Box>
+            ) : error ? (
+              <Text style={{ color: 'red', textAlign: 'center' }}>{error}</Text>
+            ) : entries.length === 0 ? (
+              <Text style={{ 
+                fontFamily: "'Fuzzy Bubbles', sans-serif",
+                color: '#333',
+                fontSize: '1.2em',
+                textAlign: 'center' 
+              }}>
+                No entries yet. Create your first entry!
               </Text>
-              <Text
-                style={{
-                  fontFamily: "'Fuzzy Bubbles', sans-serif",
-                  color: '#333',
-                  fontSize: '1.2em',
-                  marginBottom: '5px',
-                  wordWrap: 'break-word',  // Wrap long words inside the box
-                }}
-              >
-                {entry.text} {/* Display the entry text */}
-              </Text>
-              <Text
-                style={{
-                  fontFamily: "'Fuzzy Bubbles', sans-serif",
-                  color: '#333',
-                  fontSize: '1em',
-                  fontStyle: 'italic',
-                }}
-              >
-                {new Date(entry.date).toLocaleString()} {/* Display date in a readable format */}
-              </Text>
-            </Box>
-          ))}
-        </Box>
+            ) : (
+              entries.map((entry) => (
+                <Box
+                  key={entry.id}
+                  style={{
+                    backgroundColor: '#FFCF9F',
+                    padding: '15px',
+                    borderRadius: '10px',
+                    marginBottom: '10px',
+                    boxShadow: '0px 6px 12px rgba(0, 0, 0, 0.15)',
+                    width: '100%',
+                    maxWidth: '600px',
+                  }}
+                >
+                  <Text
+                    style={{
+                      fontFamily: "'Fuzzy Bubbles', sans-serif",
+                      color: '#333',
+                      fontSize: '1.5em',
+                      fontWeight: 'bold',
+                      marginBottom: '5px',
+                    }}
+                  >
+                    {entry.title || 'Untitled'}
+                  </Text>
+                  <Text
+                    style={{
+                      fontFamily: "'Fuzzy Bubbles', sans-serif",
+                      color: '#333',
+                      fontSize: '1.2em',
+                      marginBottom: '5px',
+                      wordWrap: 'break-word',
+                    }}
+                  >
+                    {entry.body || entry.text}
+                  </Text>
+                  <Text
+                    style={{
+                      fontFamily: "'Fuzzy Bubbles', sans-serif",
+                      color: '#333',
+                      fontSize: '1em',
+                      fontStyle: 'italic',
+                    }}
+                  >
+                    {new Date(entry.dateCreated).toLocaleString()}
+                  </Text>
+                  <Text
+                    style={{
+                      fontFamily: "'Fuzzy Bubbles', sans-serif",
+                      color: '#333',
+                      fontSize: '1em',
+                      fontStyle: 'italic',
+                    }}
+                  >
+                    {entry.isPublic ? 'Public' : 'Private'}
+                  </Text>
+                </Box>
+              ))
+            )}
+          </Box>
 
-        {/* Right Section: Create New Entry */}
-        <Box
-          style={{
-            width: '600px', // Fixed width for the right section
-            padding: '20px',
-            height: '600px', // Adjust height as needed
-            backgroundColor: '#FFCF9F',  // Orange background for the creation form
-            borderRadius: '20px',
-            boxShadow: '0px 6px 12px rgba(0, 0, 0, 0.15)',
-            display: 'flex',
-            flexDirection: 'column',
-            justifyContent: 'space-between',
-            marginTop: '150px',
-            marginInlineEnd: '20px',
-          }}
-        >
-          <Text
+          {/* Right Column: Create New Entry */}
+          <Box
             style={{
-              fontFamily: "'Fuzzy Bubbles', sans-serif",
-              color: '#333',
-              fontSize: '1.8em',
-              fontWeight: 'bold',
-              marginBottom: '15px',
+              width: '600px',
+              padding: '20px',
+              height: '600px',
+              backgroundColor: '#FFCF9F',
+              borderRadius: '20px',
+              boxShadow: '0px 6px 12px rgba(0, 0, 0, 0.15)',
+              display: 'flex',
+              flexDirection: 'column',
+              justifyContent: 'space-between',
             }}
           >
-            Create an Entry:
-          </Text>
+            <Text
+              style={{
+                fontFamily: "'Fuzzy Bubbles', sans-serif",
+                color: '#333',
+                fontSize: '1.8em',
+                fontWeight: 'bold',
+                marginBottom: '15px',
+              }}
+            >
+              Create an Entry:
+            </Text>
 
-          {/* Title Heading */}
-          <Text
-            style={{
-              fontFamily: "'Fuzzy Bubbles', sans-serif",
-              color: '#333',
-              fontSize: '1.4em',
-              fontWeight: 'bold',
-              marginBottom: '5px',  // Reduced margin to bring Title and textbox closer
-            }}
-          >
-            Title
-          </Text>
+            <Text
+              style={{
+                fontFamily: "'Fuzzy Bubbles', sans-serif",
+                color: '#333',
+                fontSize: '1.4em',
+                fontWeight: 'bold',
+                marginBottom: '5px',
+              }}
+            >
+              Title
+            </Text>
 
-          {/* Title Input Field */}
-          <TextInput
-            value={title}
-            onChange={(e) => setTitle(e.target.value)}
-            placeholder="Title"
-            style={{
-              width: '100%',
-              fontSize: '1em',
-              borderRadius: '8px',
-              marginBottom: '15px',  // Reduced margin to bring Title and textbox closer
-              backgroundColor: 'white',
-            }}
-          />
-
-          {/* Entry Heading */}
-          <Text
-            style={{
-              fontFamily: "'Fuzzy Bubbles', sans-serif",
-              color: '#333',
-              fontSize: '1.4em',
-              fontWeight: 'bold',
-              marginBottom: '5px',  // Reduced margin to bring Entry and textbox closer
-            }}
-          >
-            Entry
-          </Text>
-
-          {/* Entry Text Area */}  
-          <Textarea
-            value={entry}
-            onChange={(e) => setEntry(e.target.value)}
-            placeholder="Type here..."
-            minRows={50} // Adjust this to make the textarea larger
-            style={{
-              width: '100%',
-              fontSize: '1em',
-              borderRadius: '8px',
-              backgroundColor: 'white',
-              marginBottom: '15px',  // Adjust margin to ensure there's enough space
-            }}
-          />
-
-          <Text
-            style={{
-              fontFamily: "'Fuzzy Bubbles', sans-serif",
-              color: '#333',
-              fontSize: '1.4em',
-              marginBottom: '15px',
-            }}
-          >
-            Make this entry public?
-          </Text>
-
-          <Group position="center">
-            <Switch
-              checked={isPublic}
-              onChange={(e) => setIsPublic(e.currentTarget.checked)}
-              color="yellow"
-              label="Yes, post on community feed"
+            <TextInput
+              value={title}
+              onChange={(e) => setTitle(e.target.value)}
+              placeholder="Title"
+              style={{
+                width: '100%',
+                fontSize: '1em',
+                borderRadius: '8px',
+                marginBottom: '15px',
+                backgroundColor: 'white',
+              }}
             />
-          </Group>
 
-          <Button
-            variant="filled"
-            color="#FFFAC3"
-            style={{
-              marginTop: '20px',
-              fontFamily: "'Fuzzy Bubbles', sans-serif",
-              fontSize: '1.2rem',
-              padding: '10px 20px',
-              color: 'black',
-            }}
-            onClick={handleNextClick}
-          >
-            Save Entry
-          </Button>
-        </Box>
-      </div>
+            <Text
+              style={{
+                fontFamily: "'Fuzzy Bubbles', sans-serif",
+                color: '#333',
+                fontSize: '1.4em',
+                fontWeight: 'bold',
+                marginBottom: '5px',
+              }}
+            >
+              Entry
+            </Text>
+
+            <Textarea
+              value={entry}
+              onChange={(e) => setEntry(e.target.value)}
+              placeholder="Type here..."
+              minRows={50}
+              style={{
+                width: '100%',
+                fontSize: '1em',
+                borderRadius: '8px',
+                backgroundColor: 'white',
+                marginBottom: '15px',
+              }}
+            />
+
+            <Text
+              style={{
+                fontFamily: "'Fuzzy Bubbles', sans-serif",
+                color: '#333',
+                fontSize: '1.4em',
+                marginBottom: '15px',
+              }}
+            >
+              Make this entry public?
+            </Text>
+
+            <Group position="center">
+              <Switch
+                checked={isPublic}
+                onChange={(e) => setIsPublic(e.currentTarget.checked)}
+                color="yellow"
+                label="Yes, post on community feed"
+              />
+            </Group>
+
+            <Button
+              variant="filled"
+              color="#FFFAC3"
+              style={{
+                marginTop: '20px',
+                fontFamily: "'Fuzzy Bubbles', sans-serif",
+                fontSize: '1.2rem',
+                padding: '10px 20px',
+                color: 'black',
+              }}
+              onClick={handleNextClick}
+            >
+              Save Entry
+            </Button>
+          </Box>
+        </SimpleGrid>
+      </Box>
     </>
   );
 };
