@@ -7,9 +7,9 @@ const AuthNavBar = ({ method, toggleMethod }) => {
   return (
     // Navigation bar container with bottom border
     <nav style={{ padding: '1rem', borderBottom: '1px solid #e0e0e0' }}>
-      <Container style={{ maxWidth: '100%', padding: '0', margin: '0 auto' }}>
+      <Container style={{ maxWidth: '100%', padding: '0', margin: '0' }}>
         <Center>
-          <Image src={LogoImage} alt="Logo" height={200} width={200} />
+          <Image src={LogoImage} alt="Logo" style={{ position: 'relative', height: '300px', width: '200px' }} />
         </Center>
         <Center style={{ marginTop: '0px' }}>
           <Text
