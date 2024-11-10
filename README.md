@@ -13,5 +13,5 @@ We believe mental health awareness is crucial for everyone. We are motivated by 
 ## ⛏️ How we built it
 Our application’s backend is primarily built with **Firebase**, **Javascript**, **Express.js**, and **Axios**, while the front-end utilizes **React**, **Figma**, and **Mantine**. for a seamless user experience. Additionally, we integrated the **Gemini API** to assign tags, personalizing the user's For You page based on their preferences.
 
-##⭐ What's next for PetPals
+## ⭐ What's next for PetPals
 In the future, **PetPal** will introduce Pet Farm, a global feature where users can visit and gift each other’s pets, fostering community and kindness. We’ll also launch a **Google Extension**, allowing users to interact with their pets outside the website, keeping them engaged and connected across the browser. These features aim to enhance global interaction and support mental health through constant, positive engagement.
