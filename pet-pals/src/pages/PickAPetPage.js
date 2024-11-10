@@ -30,7 +30,7 @@ const PickAPetPage = () => {
       setPetNames((prevNames) => ({ ...prevNames, [selectedPet]: tempName }));
       setSelectedPet(null);
       setTempName("");
-      navigate('/');  // Navigate to Home Page
+      navigate('/checkin');  // Navigate to Home Page
     }
   };
 
