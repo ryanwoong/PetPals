@@ -1,15 +1,15 @@
+import {
+  Button,
+  Container,
+  Paper,
+  PasswordInput,
+  TextInput,
+  Title,
+} from "@mantine/core";
+import { signInWithPopup } from "firebase/auth";
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import {
-  TextInput,
-  PasswordInput,
-  Button,
-  Paper,
-  Title,
-  Container,
-} from "@mantine/core";
 import AuthNavBar from "../components/AuthNavBar";
-import { signInWithPopup } from "firebase/auth";
 import { auth, googleProvider } from "../firebase";
 import { useAuth } from "../util/AuthContext"; // Import the auth context hook
 
@@ -102,46 +102,31 @@ const AuthPage = () => {
   };
 
   return (
-    <Container size={420} my={40}>
-      <AuthNavBar method={method} toggleMethod={toggleMethod} />
+    <Container fluid style={{padding: 0, margin: 0, minHeight: '100vh', backgroundColor: '#FDF5E6' }}>
+      <Container size={420} my={40} style={{ minHeight: '100vh', backgroundColor: '#FDF5E6' }}>
+        <AuthNavBar method={method} toggleMethod={toggleMethod} />
 
-      <Title align="center" mb="sm" mt="md" style={{ fontFamily: "'Fuzzy Bubbles'" }}>
-        {method === "signIn" ? "Log In" : "Register"}
-      </Title>
+        <Title align="center" mb="sm" mt="md" style={{ fontFamily: 'Fuzzy Bubbles' }}>
+          {method === "signIn" ? "Log In" : "Register"}
+        </Title>
 
-      <Paper withBorder shadow="md" p={30} radius="md" mt="lg">
-        <form onSubmit={handleSubmit}>
-          <TextInput
-            style={{
-              fontSize: '1.5rem',
-              marginBottom: '20px',
-              fontFamily: "'Fuzzy Bubbles', sans-serif",
-              color: '#000000',
-            }}
-            label="Email"
-            placeholder="you@example.com"
-            id="email"
-            value={form.email}
-            onChange={handleChange}
-            mt="md"
-            required
-          />
-          <PasswordInput
-            style={{
-              fontSize: '1.5rem',
-              marginBottom: '20px',
-              fontFamily: "'Fuzzy Bubbles', sans-serif",
-              color: '#000000',
-            }}
-            label="Password"
-            placeholder="Your password"
-            id="password"
-            value={form.password}
-            onChange={handleChange}
-            mt="md"
-            required
-          />
-          {method === "signUp" && (
+        <Paper withBorder shadow="md" p={30} radius="md" mt="lg">
+          <form onSubmit={handleSubmit}>
+            <TextInput
+              style={{
+                fontSize: '1.5rem',
+                marginBottom: '20px',
+                fontFamily: "'Fuzzy Bubbles', sans-serif",
+                color: '#000000',
+              }}
+              label="Email"
+              placeholder="you@example.com"
+              id="email"
+              value={form.email}
+              onChange={handleChange}
+              mt="md"
+              required
+            />
             <PasswordInput
               style={{
                 fontSize: '1.5rem',
@@ -149,51 +134,68 @@ const AuthPage = () => {
                 fontFamily: "'Fuzzy Bubbles', sans-serif",
                 color: '#000000',
               }}
-              label="Confirm Password"
-              placeholder="Confirm your password"
-              id="confirmPassword"
-              value={form.confirmPassword}
+              label="Password"
+              placeholder="Your password"
+              id="password"
+              value={form.password}
               onChange={handleChange}
               mt="md"
               required
             />
-          )}
-          {error && (
-            <div style={{ color: 'red', marginTop: '10px', textAlign: 'center' }}>
-              {error}
-            </div>
-          )}
-          <Button
-            type="submit"
-            fullWidth
-            mt="xl"
-            color="#FFCF9F"
-            style={{
-              fontSize: '1rem',
-              marginBottom: '20px',
-              fontFamily: "'Fuzzy Bubbles'",
-            }}
-          >
-            {method === "signIn" ? "Log In" : "Register"}
-          </Button>
-        </form>
+            {method === "signUp" && (
+              <PasswordInput
+                style={{
+                  fontSize: '1.5rem',
+                  marginBottom: '20px',
+                  fontFamily: "'Fuzzy Bubbles', sans-serif",
+                  color: '#000000',
+                }}
+                label="Confirm Password"
+                placeholder="Confirm your password"
+                id="confirmPassword"
+                value={form.confirmPassword}
+                onChange={handleChange}
+                mt="md"
+                required
+              />
+            )}
+            {error && (
+              <div style={{ color: 'red', marginTop: '10px', textAlign: 'center' }}>
+                {error}
+              </div>
+            )}
+            <Button
+              type="submit"
+              fullWidth
+              mt="xl"
+              color="#FFCF9F"
+              style={{
+                fontSize: '1rem',
+                marginBottom: '20px',
+                fontFamily: "'Fuzzy Bubbles'",
+              }}
+            >
+              {method === "signIn" ? "Log In" : "Register"}
+            </Button>
+          </form>
 
-        {/* Conditionally render Google Sign-In Button for Log In only */}
-        {method === "signIn" && (
-          <Button
-            fullWidth
-            mt="md"
-            color="blue"
-            onClick={handleGoogleSignIn}
-            style={{
-              fontSize: '1rem',
-              fontFamily: "'Fuzzy Bubbles'",
-            }}
-          >
-            Sign in with Google
-          </Button>
-        )}
-      </Paper>
+          {/* Conditionally render Google Sign-In Button for Log In only */}
+          {method === "signIn" && (
+            <Button
+              fullWidth
+              mt="md"
+              color="blue"
+              onClick={handleGoogleSignIn}
+              style={{
+                fontSize: '1rem',
+                fontFamily: "'Fuzzy Bubbles'",
+              }}
+            >
+              Sign in with Google
+            </Button>
+          )}
+        </Paper>
+      </Container>
     </Container>
   );
 };
