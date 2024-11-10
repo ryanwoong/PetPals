@@ -18,7 +18,55 @@ const CommunityFeed = () => {
   const [commentLoading, setCommentLoading] = useState({});
   const navigate = useNavigate();
   const { user } = useAuth();
+  const [userTags, setUserTags] = useState([]);
 
+  // Calculate similarity score between two arrays of tags
+  const calculateSimilarityScore = (tags1 = [], tags2 = []) => {
+    if (!tags1.length || !tags2.length) return 0;
+    
+    // Create Sets for faster lookup
+    const set1 = new Set(tags1);
+    const set2 = new Set(tags2);
+    
+    // Count matching tags
+    let matchingTags = 0;
+    for (const tag of set1) {
+      if (set2.has(tag)) {
+        matchingTags++;
+      }
+    }
+    
+    // Calculate Jaccard similarity coefficient
+    const union = new Set([...tags1, ...tags2]).size;
+    return matchingTags / union;
+  };
+
+  // Fetch user's posts to get their tags
+  useEffect(() => {
+    const fetchUserPosts = async () => {
+      if (!user) return;
+      
+      try {
+        const response = await axios.get(`http://localhost:5100/posts/user/${user.uid}`);
+        
+        // Collect all unique tags from user's posts
+        const allUserTags = new Set();
+        response.data.posts.forEach(post => {
+          if (post.tags && Array.isArray(post.tags)) {
+            post.tags.forEach(tag => allUserTags.add(tag));
+          }
+        });
+        
+        setUserTags(Array.from(allUserTags));
+      } catch (error) {
+        console.error('Error fetching user posts:', error);
+      }
+    };
+
+    fetchUserPosts();
+  }, [user]);
+
+  // Fetch and sort public posts
   useEffect(() => {
     const fetchPosts = async () => {
       try {
@@ -32,11 +80,22 @@ const CommunityFeed = () => {
           text: post.body || '',
           date: post.dateCreated || new Date().toISOString(),
           authorId: post.userId || '',
-          isPublic: true
+          isPublic: true,
+          tags: post.tags || [],
+          similarityScore: 0 // Will be calculated below
         }));
 
-        console.log('Formatted posts:', formattedPosts);
-        setEntries(formattedPosts);
+        // Calculate similarity scores and sort posts
+        const postsWithScores = formattedPosts.map(post => ({
+          ...post,
+          similarityScore: calculateSimilarityScore(userTags, post.tags)
+        }));
+
+        // Sort by similarity score (highest to lowest)
+        const sortedPosts = postsWithScores.sort((a, b) => b.similarityScore - a.similarityScore);
+
+        console.log('Sorted posts:', sortedPosts);
+        setEntries(sortedPosts);
         setError(null);
       } catch (error) {
         console.error('Error fetching posts:', error);
@@ -47,8 +106,9 @@ const CommunityFeed = () => {
     };
 
     fetchPosts();
-  }, []);
+  }, [userTags]); // Re-run when userTags change
 
+  
   const loadCommentsForPost = async (userId, postId) => {
     console.log(`Loading comments for post ${postId} by user ${userId}`);
     try {

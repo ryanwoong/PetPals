@@ -169,10 +169,10 @@ const HomeNavBar = () => {
               <span>Level</span>
               <span style={styles.levelBadge}>{userData.level || 1}</span>
             </div>
-            <div style={styles.statItem}>
+            {/* <div style={styles.statItem}>
               <span>XP</span>
               <span>{userData.xp || 0}</span>
-            </div>
+            </div> */}
           </div>
         )}
         <button
