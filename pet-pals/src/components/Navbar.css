@@ -1,0 +1,27 @@
+.navbar {
+    display: flex;
+    justify-content: space-between;
+    padding: 1rem 2rem;
+    background-color: #fff;
+  }
+  
+  .nav-links {
+    display: flex;
+    list-style: none;
+    gap: 1.5rem;
+  }
+  
+  .auth-buttons button {
+    margin-left: 1rem;
+    padding: 0.5rem 1rem;
+    border: none;
+    background-color: #f8c291;
+    cursor: pointer;
+    border-radius: 5px;
+  }
+  
+  .auth-buttons .register {
+    background-color: #e17055;
+    color: #fff;
+  }
+  
