@@ -11,14 +11,11 @@ import hatImage from '../assets/Images/wizard_hat.png';
 import HomeNavBar from '../components/HomeNavBar';
 
 const HomePage = () => {
-  const [showHeart, setShowHeart] = useState(false);
+  const [hearts, setHearts] = useState([]);
   const [showTextbox, setShowTextbox] = useState(false);
   const [activeTab, setActiveTab] = useState('shop');
-  const [userBalance, setUserBalance] = useState(200);
-  const [inventoryItems, setInventoryItems] = useState([
-    { id: 1, title: 'YumYums', quantity: 5, image: kibbleImage },
-    { id: 2, title: 'Wizard Hat', quantity: 1, image: hatImage },
-  ]);
+  const [userBalance, setUserBalance] = useState(100);
+  const [inventoryItems, setInventoryItems] = useState([]);
 
   const shopItems = [
     { id: 1, title: 'YumYums', price: 10, image: kibbleImage },
@@ -27,12 +24,21 @@ const HomePage = () => {
   ];
 
   const handleCatClick = () => {
-    setShowHeart(true);
     setShowTextbox(true);
+
+    // Add a new heart with a unique id and position it with animation
+    const newHeart = { id: Date.now() };
+    setHearts((prevHearts) => [...prevHearts, newHeart]);
+
+    // Remove the heart after animation ends (1.5 seconds)
     setTimeout(() => {
-      setShowHeart(false);
+      setHearts((prevHearts) => prevHearts.filter((heart) => heart.id !== newHeart.id));
+    }, 1500);
+
+    // Hide the textbox after 5 seconds
+    setTimeout(() => {
       setShowTextbox(false);
-    }, 5000);
+    }, 8000);
   };
 
   const handleBuyItem = (item) => {
@@ -56,14 +62,39 @@ const HomePage = () => {
     <>
       <HomeNavBar />
       <Container fluid style={{ position: 'relative', height: '100vh', backgroundColor: '#FDF5E6', overflow: 'hidden' }}>
-        <img src={catGif} alt="Cat" style={{ position: 'absolute', bottom: '20px', left: '140px', cursor: 'pointer', width: '200px', height: 'auto' }}
+        <img
+          src={catGif}
+          alt="Cat"
+          style={{ position: 'absolute', bottom: '20px', left: '140px', cursor: 'pointer', width: '20%', height: 'auto' }}
           onClick={handleCatClick}
         />
 
-        {showHeart && (
-          <img src={heartImage} style={{ position: 'absolute', bottom: '170px', left: '105px', width: '70px', height: 'auto' }} alt="Heart" />
-        )}
+        {/* Heart animations */}
+        {hearts.map((heart) => (
+          <img
+            key={heart.id}
+            src={heartImage}
+            alt="Heart"
+            style={{
+              position: 'absolute',
+              bottom: '170px',
+              left: '105px',
+              width: '70px',
+              height: 'auto',
+              animation: 'slide-up 1.5s ease forwards',
+            }}
+          />
+        ))}
 
+        {/* CSS Keyframes for Slide-up Animation */}
+        <style>{`
+          @keyframes slide-up {
+            0% { opacity: 1; transform: translateY(0); }
+            100% { opacity: 0; transform: translateY(-50px); }
+          }
+        `}</style>
+
+        {/* Display Text Image */}
         <Transition mounted={showTextbox} transition="fade" duration={500} timingFunction="ease">
           {(styles) => (
             <img
@@ -75,14 +106,14 @@ const HomePage = () => {
                 top: '40%',
                 left: '35%',
                 transform: 'translate(-50%, -50%)',
-                width: '450px',
+                width: '40%',
                 height: 'auto',
               }}
             />
           )}
         </Transition>
 
-        <Container style={{ position: 'absolute', top: '15%', bottom: '15%', right: '20px', width: '500px', height: '500px', backgroundColor: '#FFFFFF', borderRadius: '10px', boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)', padding: '20px', overflowY: 'auto' }}>
+        <Container style={{ position: 'absolute', top: '15%', bottom: '15%', right: '20px', width: '43%', height: '83%', backgroundColor: '#FFFFFF', borderRadius: '10px', boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)', padding: '20px', overflowY: 'auto' }}>
 
           <SegmentedControl
             fullWidth
