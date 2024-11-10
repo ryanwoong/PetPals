@@ -38,6 +38,7 @@ const HomeNavBar = () => {
       padding: '5px 40px',
       backgroundColor: '#FFCF9F',
       fontSize: '16px',
+      fontFamily:'Fuzzy Bubbles',
       position: 'fixed',
       width: '100%',
       zIndex: 100,
