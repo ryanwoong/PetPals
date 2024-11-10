@@ -1,23 +1,19 @@
+// App.js
 import React from 'react';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import HomePage from './pages/HomePage';
 import RegisterPage from './pages/RegisterPage';
-import { Button } from '@mantine/core';
-import { Routes, Route } from 'react-router';
+import HomeNavBar from './components/HomeNavBar';
 
 function App() {
   return (
-    // <div>
-    //   <HomePage />
-    //   <Button>test</Button>
-
-    // </div>
-    <>
+    <Router> {/* Only one Router here */}
+      <HomeNavBar />
       <Routes>
-        <Route path="/" exact element={ <HomePage /> } />
-        <Route path="/register" exact element={ <RegisterPage /> } />
+        <Route path="/home" element={<HomePage />} />
+        <Route path="/register" element={<RegisterPage />} />
       </Routes>
-    
-    </>
+    </Router>
   );
 }
 
