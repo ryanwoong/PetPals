@@ -184,7 +184,7 @@ const AuthPage = () => {
             <Button
               fullWidth
               mt="md"
-              color="blue"
+              color="#FBA34B"
               onClick={handleGoogleSignIn}
               style={{
                 fontSize: '1rem',
