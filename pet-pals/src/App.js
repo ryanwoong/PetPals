@@ -74,6 +74,14 @@ function App() {
             }
           />
           <Route
+            path="/checkin"
+            element={
+              <ProtectedRoute>
+                <CheckInPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
             path="/journal"
             element={
               <ProtectedRoute>
