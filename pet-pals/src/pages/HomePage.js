@@ -5,6 +5,8 @@ import { getFirestore, doc, getDoc, updateDoc, collection, addDoc, query, where,
 import axios from "axios";
 import inventoryImage from "../assets/Images/backpack.png";
 import catGif from "../assets/Images/cat.gif";
+import snakeGif from "../assets/Images/snake.gif";
+import monkeyGif from "../assets/Images/monkey.gif";
 import glassesImage from "../assets/Images/glasses.png";
 import heartImage from "../assets/Images/heart.png";
 import kibbleImage from "../assets/Images/kibble.png";
@@ -22,6 +24,7 @@ const HomePage = () => {
   const [currentAffirmation, setCurrentAffirmation] = useState("");
   const [canShowNewAffirmation, setCanShowNewAffirmation] = useState(true);
   const [activeTab, setActiveTab] = useState("shop");
+  const [petImage, setPetImage] = useState(catGif); 
   const [inventoryItems, setInventoryItems] = useState([]);
   const [shopItems, setShopItems] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
@@ -39,9 +42,9 @@ const HomePage = () => {
     const userRef = doc(db, "users", user.uid);
     const unsubscribeUser = onSnapshot(
       userRef,
-      (docSnapshot) => {
+      async (docSnapshot) => {
         if (docSnapshot.exists()) {
-          setUserData(docSnapshot.data());
+          const userData = docSnapshot.data();
         }
       },
       (error) => {
@@ -82,12 +85,44 @@ const HomePage = () => {
       }
     );
 
+    const loadPetImage = async () => {
+      try {
+        // Get the first document from the 'pets' collection
+        const petsCollection = collection(db, "pets");
+        const petDocs = await getDocs(petsCollection);
+
+        if (!petDocs.empty) {
+          const firstPetDoc = petDocs.docs[0];
+          const petData = firstPetDoc.data();
+          const petType = petData.type;
+
+          console.log("Pet Type:", petType);
+
+          // Set pet image based on the pet type
+          if (petType === "cat") {
+            setPetImage(catGif);
+          } else if (petType === "monkey") {
+            setPetImage(monkeyGif);
+          } else if (petType === "snake") {
+            setPetImage(snakeGif);
+          } else {
+            setPetImage(null); // Default case if no match
+          }
+        }
+      } catch (error) {
+        console.error("Error retrieving pet document:", error);
+      }
+    };
+
+    loadPetImage();
+
     // Cleanup listeners on unmount
     return () => {
       unsubscribeUser();
       unsubscribeInventory();
     };
   }, [user, db]);
+
 
   // Fetch shop items
   useEffect(() => {
@@ -285,7 +320,7 @@ const HomePage = () => {
         }}
       >
         <img
-          src={catGif}
+          src={petImage}
           alt="Cat"
           style={{
             position: "absolute",

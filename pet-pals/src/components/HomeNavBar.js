@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { Modal, Container, Text, Box, List, Title, Image } from '@mantine/core';
 import { BsQuestionCircleFill } from 'react-icons/bs';
-import LogoImage from '../assets/Images/logo.png';
+import LogoImage from '../assets/Images/logo_gif.gif';
 import { useAuth } from '../util/AuthContext';
 import { getFirestore, doc, onSnapshot } from 'firebase/firestore';
 import coin from "../assets/Images/coin.png";
@@ -47,10 +47,6 @@ const HomeNavBar = () => {
     logoContainer: {
       display: 'flex',
       alignItems: 'center',
-      width: '70px',
-      height: '70px',
-      borderRadius: '50%',
-      backgroundColor: '#FFFAC3',
       marginRight: '20px',
     },
     logoImage: {
