@@ -7,7 +7,7 @@ const InstructionsPage = () => {
 
   // Handle the "Yes" button click event (navigate to CheckInPage)
   const handleYes = () => {
-    navigate('/checkin'); // Navigate to CheckIn page
+    navigate('/pickapet'); // Navigate to CheckIn page
   };
 
   const handleNo = () => {
