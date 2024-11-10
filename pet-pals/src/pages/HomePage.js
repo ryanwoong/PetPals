@@ -11,49 +11,46 @@ import hatImage from '../assets/Images/wizard_hat.png';
 import HomeNavBar from '../components/HomeNavBar';
 
 const HomePage = () => {
-  const [hearts, setHearts] = useState([]);
-  const [showTextbox, setShowTextbox] = useState(false);
-  const [activeTab, setActiveTab] = useState('shop');
-  const [userBalance, setUserBalance] = useState(100);
-  const [inventoryItems, setInventoryItems] = useState([]);
+  const [hearts, setHearts] = useState([]); // State for heart animations
+  const [showTextbox, setShowTextbox] = useState(false); // State for textbox visibility
+  const [activeTab, setActiveTab] = useState('shop'); // Track active tab (shop or inventory)
+  const [userBalance, setUserBalance] = useState(100); // Track user's balance
+  const [inventoryItems, setInventoryItems] = useState([]); // Inventory items list
 
+  // Items available for purchase
   const shopItems = [
     { id: 1, title: 'YumYums', price: 10, image: kibbleImage },
     { id: 2, title: 'Wizard Hat', price: 50, image: hatImage },
     { id: 3, title: 'Sunglasses', price: 30, image: glassesImage },
   ];
 
+  // Handle click on the cat image
   const handleCatClick = () => {
-    setShowTextbox(true);
+    setShowTextbox(true); // Show textbox
 
-    // Add a new heart with a unique id and position it with animation
+    // Create and animate a new heart
     const newHeart = { id: Date.now() };
     setHearts((prevHearts) => [...prevHearts, newHeart]);
-
-    // Remove the heart after animation ends (1.5 seconds)
     setTimeout(() => {
       setHearts((prevHearts) => prevHearts.filter((heart) => heart.id !== newHeart.id));
-    }, 1500);
+    }, 1500); // Remove heart after animation
 
-    // Hide the textbox after 5 seconds
     setTimeout(() => {
-      setShowTextbox(false);
+      setShowTextbox(false); // Hide textbox after 5 seconds
     }, 8000);
   };
 
+  // Handle buying an item and updating balance/inventory
   const handleBuyItem = (item) => {
     if (userBalance >= item.price) {
-      setUserBalance((prevBalance) => prevBalance - item.price);
-
+      setUserBalance((prevBalance) => prevBalance - item.price); // Deduct price from balance
       setInventoryItems((prevInventory) => {
         const existingItem = prevInventory.find((invItem) => invItem.id === item.id);
-        if (existingItem) {
-          return prevInventory.map((invItem) =>
-            invItem.id === item.id ? { ...invItem, quantity: invItem.quantity + 1 } : invItem
-          );
-        } else {
-          return [...prevInventory, { id: item.id, title: item.title, quantity: 1, image: item.image }];
-        }
+        return existingItem
+          ? prevInventory.map((invItem) =>
+              invItem.id === item.id ? { ...invItem, quantity: invItem.quantity + 1 } : invItem
+            )
+          : [...prevInventory, { id: item.id, title: item.title, quantity: 1, image: item.image }];
       });
     }
   };
@@ -75,10 +72,18 @@ const HomePage = () => {
             key={heart.id}
             src={heartImage}
             alt="Heart"
-            style={{position: 'absolute', bottom: '190px', left: '100px', width: '5rem', height: 'auto', animation: 'slide-up 1.5s ease forwards', }}/>
+            style={{
+              position: 'absolute',
+              bottom: '190px',
+              left: '100px',
+              width: '5rem',
+              height: 'auto',
+              animation: 'slide-up 1.5s ease forwards',
+            }}
+          />
         ))}
 
-        {/* CSS Keyframes for Slide-up Animation */}
+        {/* CSS Keyframes for slide-up animation */}
         <style>{`
           @keyframes slide-up {
             0% { opacity: 1; transform: translateY(0); }
@@ -100,14 +105,28 @@ const HomePage = () => {
                 transform: 'translate(-50%, -50%)',
                 width: '40%',
                 height: 'auto',
-                zIndex: 3
+                zIndex: 3,
               }}
             />
           )}
         </Transition>
 
         <Container
-          style={{position: 'absolute', top: '15%', bottom: '15%', right: '20px', width: '42%', height: '83%', backgroundColor: 'rgba(255, 255, 255, 0.95)', borderRadius: '10px',  boxShadow: '0 4px 8px rgba(0, 0, 0, 0.2)', padding: '20px', overflowY: 'auto', zIndex: 2}}>
+          style={{
+            position: 'absolute',
+            top: '15%',
+            bottom: '15%',
+            right: '20px',
+            width: '42%',
+            height: '83%',
+            backgroundColor: 'rgba(255, 255, 255, 0.95)',
+            borderRadius: '10px',
+            boxShadow: '0 4px 8px rgba(0, 0, 0, 0.2)',
+            padding: '20px',
+            overflowY: 'auto',
+            zIndex: 2,
+          }}
+        >
           <SegmentedControl
             fullWidth
             value={activeTab}
@@ -133,23 +152,10 @@ const HomePage = () => {
               },
             ]}
             styles={{
-              root: {
-                backgroundColor: '#FFCF9F',
-                borderRadius: '8px',
-                fontFamily: 'Fuzzy Bubbles',
-              },
-              label: {
-                color: 'black',
-              },
-              active: {
-                backgroundColor: '#FFFAC3',
-                color: 'black',
-              },
-              control: {
-                '&:hover': {
-                  backgroundColor: '#FFFAC3',
-                },
-              },
+              root: { backgroundColor: '#FFCF9F', borderRadius: '8px', fontFamily: 'Fuzzy Bubbles' },
+              label: { color: 'black' },
+              active: { backgroundColor: '#FFFAC3', color: 'black' },
+              control: { '&:hover': { backgroundColor: '#FFFAC3' } },
             }}
             style={{ marginBottom: '20px' }}
           />
@@ -159,15 +165,7 @@ const HomePage = () => {
             <Grid>
               {shopItems.map((item) => (
                 <Grid.Col span={4} key={item.id}>
-                  <Container
-                    style={{
-                      border: '3px solid #FFCF9F',
-                      borderRadius: '8px',
-                      padding: '10px',
-                      backgroundColor: 'white',
-                      textAlign: 'center',
-                    }}
-                  >
+                  <Container style={{ border: '3px solid #FFCF9F', borderRadius: '8px', padding: '10px', backgroundColor: 'white', textAlign: 'center' }}>
                     <img src={item.image} alt={item.title} style={{ width: '50px', height: 'auto', marginBottom: '10px' }} />
                     <Text weight={500} size="sm" style={{ marginBottom: '5px', fontFamily: 'Fuzzy Bubbles' }}>{item.title}</Text>
                     <Text size="xs" color="gray" style={{ marginBottom: '10px' }}>${item.price}</Text>
@@ -192,15 +190,7 @@ const HomePage = () => {
             <Grid>
               {inventoryItems.map((item) => (
                 <Grid.Col span={4} key={item.id}>
-                  <Container
-                    style={{
-                      border: '3px solid #FFCF9F',
-                      borderRadius: '8px',
-                      padding: '10px',
-                      backgroundColor: 'white',
-                      textAlign: 'center'
-                    }}
-                  >
+                  <Container style={{ border: '3px solid #FFCF9F', borderRadius: '8px', padding: '10px', backgroundColor: 'white', textAlign: 'center' }}>
                     <img src={item.image} alt={item.title} style={{ width: '50px', height: 'auto', marginBottom: '10px' }} />
                     <Text weight={500} size="sm" style={{ marginBottom: '5px', fontFamily: 'Fuzzy Bubbles' }}>{item.title}</Text>
                     <Text size="xs" color="gray" style={{ marginBottom: '10px' }}>Quantity: {item.quantity}</Text>
@@ -208,17 +198,9 @@ const HomePage = () => {
                       fullWidth
                       variant="outline"
                       color="yellow"
-                      style={{
-                        marginTop: '10px',
-                        transition: 'background-color 0.3s',
-                        backgroundColor: item.isHovered ? '#FFFAC3' : 'white',
-                      }}
-                      onMouseEnter={() => setInventoryItems((prev) => prev.map((invItem) =>
-                        invItem.id === item.id ? { ...invItem, isHovered: true } : invItem
-                      ))}
-                      onMouseLeave={() => setInventoryItems((prev) => prev.map((invItem) =>
-                        invItem.id === item.id ? { ...invItem, isHovered: false } : invItem
-                      ))}
+                      style={{ marginTop: '10px', transition: 'background-color 0.3s', backgroundColor: item.isHovered ? '#FFFAC3' : 'white' }}
+                      onMouseEnter={() => setInventoryItems((prev) => prev.map((invItem) => invItem.id === item.id ? { ...invItem, isHovered: true } : invItem))}
+                      onMouseLeave={() => setInventoryItems((prev) => prev.map((invItem) => invItem.id === item.id ? { ...invItem, isHovered: false } : invItem))}
                     >
                       Use
                     </Button>

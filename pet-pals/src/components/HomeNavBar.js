@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Link, useNavigate, useLocation } from 'react-router-dom'; // Add useLocation
+import { Link, useNavigate, useLocation } from 'react-router-dom'; // Import navigation and location hooks
 import LogoImage from '../assets/Images/logo.png';
 import { useAuth } from '../util/AuthContext';
 import { getFirestore, doc, getDoc } from 'firebase/firestore';
@@ -9,10 +9,11 @@ import coin from "../assets/Images/coin.png";
 const HomeNavBar = () => {
   const { logout, user } = useAuth();
   const navigate = useNavigate();
-  const location = useLocation(); // Get current location
-  const [userData, setUserData] = useState(null);
+  const location = useLocation(); // Capture current location for active link styling
+  const [userData, setUserData] = useState(null); // Holds fetched user data from Firebase
 
   useEffect(() => {
+    // Fetch user data from Firebase Firestore on component mount
     const fetchUserData = async () => {
       if (user?.uid) {
         const db = getFirestore();
@@ -20,7 +21,7 @@ const HomeNavBar = () => {
         try {
           const docSnap = await getDoc(userRef);
           if (docSnap.exists()) {
-            setUserData(docSnap.data());
+            setUserData(docSnap.data()); // Set user data if it exists
           }
         } catch (error) {
           console.error('Error fetching user data:', error);
@@ -39,7 +40,7 @@ const HomeNavBar = () => {
       padding: '5px 40px',
       backgroundColor: '#FFCF9F',
       fontSize: '16px',
-      fontFamily:'Fuzzy Bubbles',
+      fontFamily: 'Fuzzy Bubbles',
       position: 'fixed',
       width: '100%',
       zIndex: 100,
@@ -131,6 +132,7 @@ const HomeNavBar = () => {
   };
 
   const handleLogout = async () => {
+    // Log out the user and navigate to the main page
     try {
       await logout();
       navigate('/');
@@ -149,6 +151,7 @@ const HomeNavBar = () => {
 
   return (
     <nav style={styles.navbar}>
+      {/* Navigation group for logo and main links */}
       <div style={styles.navGroup}>
         <Link to="/home" style={styles.logoContainer}>
           <img src={LogoImage} alt="Logo" style={styles.logoImage} />
@@ -159,11 +162,14 @@ const HomeNavBar = () => {
       </div>
 
       <div style={styles.userInfo}>
+        {/* Display user information if available */}
         {userData && (
           <div style={styles.userStats}>
             <span style={styles.username}>{userData.username || "User"}</span>
             <div style={styles.statItem}>
-              <span style={styles.coinIcon}><Image src={coin}></Image></span>
+              <span style={styles.coinIcon}>
+                <Image src={coin} alt="Coin Icon" />
+              </span>
               <span>{userData.coins || 0}</span>
             </div>
             <div style={styles.statItem}>
@@ -176,6 +182,7 @@ const HomeNavBar = () => {
             </div>
           </div>
         )}
+        {/* Logout button with hover effect */}
         <button
           onClick={handleLogout}
           style={styles.logoutButton}

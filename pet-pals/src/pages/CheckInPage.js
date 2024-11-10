@@ -1,12 +1,14 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom'; // Import useNavigate
+import { useNavigate } from 'react-router-dom'; // Import useNavigate for navigation
 import { Text, Button, Container, TextInput, Group, Box } from '@mantine/core';
 
 const CheckInPage = () => {
+  // State to track the selected mood
   const [selectedMood, setSelectedMood] = useState(null);
 
-  const navigate = useNavigate(); // Create navigate function to handle navigation
+  const navigate = useNavigate(); // Function to navigate between routes
 
+  // Array of mood options, each with an emoji and label
   const moods = [
     { id: 1, emoji: '😠', label: 'Angry' },
     { id: 2, emoji: '😔', label: 'Sad' },
@@ -15,11 +17,13 @@ const CheckInPage = () => {
     { id: 5, emoji: '😁', label: 'Very Happy' }
   ];
 
+  // Function to navigate to the home page when "Next" is clicked
   const handleNextClick = () => {
-    navigate('/home'); // Navigate to CheckIn page
+    navigate('/home');
   };
 
   return (
+    // Full-page background container with centered content
     <Box
       style={{
         display: 'flex',
@@ -32,14 +36,15 @@ const CheckInPage = () => {
     >
       <Container
         style={{
-          backgroundColor: '#f8d7a2',
+          backgroundColor: '#f8d7a2', // Background color for the inner container
           padding: '30px',
           borderRadius: '20px',
           width: '500px',
           textAlign: 'center',
-          boxShadow: '0px 6px 12px rgba(0, 0, 0, 0.15)',
+          boxShadow: '0px 6px 12px rgba(0, 0, 0, 0.15)', // Adds a soft shadow
         }}
       >
+        {/* Heading text prompting the user for input */}
         <Text
           style={{
             fontFamily: "'Fuzzy Bubbles', sans-serif",
@@ -51,19 +56,21 @@ const CheckInPage = () => {
           What's on your mind today?
         </Text>
 
+        {/* Text input for the user to type their thoughts */}
         <TextInput
           placeholder="Type here..."
           style={{
-            width: '90%',  // Controls the width of the input
+            width: '90%', // Sets the width of the input
             padding: '12px',
             fontSize: '1em',
             borderRadius: '8px',
-            margin: '0 auto',  // Horizontally centers the input
-            display: 'block',  // Ensures block-level behavior to respect the margin
-            marginBottom: '20px',  // Adds space below the input
+            margin: '0 auto', // Centers the input horizontally
+            display: 'block',
+            marginBottom: '20px', // Space below the input
           }}
         />
 
+        {/* Subheading text prompting the user to select a mood */}
         <Text
           style={{
             fontFamily: "'Fuzzy Bubbles', sans-serif",
@@ -76,6 +83,7 @@ const CheckInPage = () => {
           How are you feeling today?
         </Text>
 
+        {/* Group of mood selection buttons */}
         <Group
           position="center"
           spacing="lg"
@@ -83,29 +91,31 @@ const CheckInPage = () => {
             marginTop: '20px',
           }}
         >
+          {/* Map through moods array to render each mood as a button */}
           {moods.map((mood) => (
             <Button
               key={mood.id}
-              variant="transparent"
+              variant="transparent" // Transparent style for button
               style={{
                 fontSize: '2.5em',
-                padding: '0',  // Remove extra padding
-                width: '70px',  // Set width
-                height: '70px',  // Set height to make it circular
-                borderRadius: '50%',  // Make button fully circular
-                transition: 'transform 0.2s ease',
-                transform: selectedMood === mood.id ? 'scale(1.3)' : 'scale(1)',
-                outline: 'none',  // Remove outline
+                padding: '0', // Removes padding for a cleaner look
+                width: '70px', // Sets width of the button
+                height: '70px', // Sets height to make it circular
+                borderRadius: '50%', // Fully circular button
+                transition: 'transform 0.2s ease', // Smooth scaling effect on click
+                transform: selectedMood === mood.id ? 'scale(1.3)' : 'scale(1)', // Scale if selected
+                outline: 'none', // Removes outline
               }}
-              onClick={() => setSelectedMood(mood.id)}
-              title={mood.label}
-              aria-label={mood.label}
+              onClick={() => setSelectedMood(mood.id)} // Set the selected mood when clicked
+              title={mood.label} // Tooltip text for accessibility
+              aria-label={mood.label} // Accessibility label
             >
-              {mood.emoji}
+              {mood.emoji} {/* Display mood emoji */}
             </Button>
           ))}
         </Group>
 
+        {/* "Next" button to proceed to the next page */}
         <Button
           variant="filled"
           color="#FFFAC3"
@@ -116,7 +126,7 @@ const CheckInPage = () => {
             padding: '10px 20px',
             color: 'black',
           }}
-          onClick={handleNextClick}
+          onClick={handleNextClick} // Navigate to home page on click
         >
           Next
         </Button>
