@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import LogoImage from '../assets/logo.png';
+import LogoImage from '../assets/Images/logo.png';
 import { useAuth } from '../util/AuthContext';
 import { getFirestore, doc, getDoc } from 'firebase/firestore';
 import { Image } from '@mantine/core';
-import coin from "../assets/coin.png";
+import coin from "../assets/Images/coin.png";
 
 const HomeNavBar = () => {
   const { logout, user } = useAuth();

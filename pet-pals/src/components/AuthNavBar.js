@@ -1,6 +1,6 @@
 import React from 'react';
 import { Group, Button, Center, Image, Container } from '@mantine/core';
-import LogoImage from '../assets/logo.png';
+import LogoImage from '../assets/Images/logo.png';
 
 const AuthNavBar = ({ method, toggleMethod }) => {
   return (
@@ -16,7 +16,6 @@ const AuthNavBar = ({ method, toggleMethod }) => {
                 fontSize: '1.5rem',
                 marginBottom: '20px',
                 fontFamily: "'Fuzzy Bubbles'",
-                // color: '#000000',
               }}
               variant={method === 'signIn' ? 'filled' : 'subtle'}
               color="#FFCF9F"
@@ -28,8 +27,7 @@ const AuthNavBar = ({ method, toggleMethod }) => {
               style={{
                 fontSize: '1.5rem',
                 marginBottom: '20px',
-                fontFamily: "'Fuzzy Bubbles', sans-serif",
-                // color: '#000000',
+                fontFamily: 'Fuzzy Bubbles'
               }}
               variant={method === 'signUp' ? 'filled' : 'subtle'}
               color="#FFCF9F"

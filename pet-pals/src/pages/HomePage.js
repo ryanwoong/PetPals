@@ -65,7 +65,7 @@ const HomePage = () => {
         <img
           src={catGif}
           alt="Cat"
-          style={{ position: 'absolute', bottom: '20px', left: '140px', cursor: 'pointer', width: '20%', height: 'auto' }}
+          style={{ position: 'absolute', bottom: '20px', left: '140px', cursor: 'pointer', width: '15rem', height: 'auto' }}
           onClick={handleCatClick}
         />
 
@@ -75,15 +75,7 @@ const HomePage = () => {
             key={heart.id}
             src={heartImage}
             alt="Heart"
-            style={{
-              position: 'absolute',
-              bottom: '170px',
-              left: '105px',
-              width: '70px',
-              height: 'auto',
-              animation: 'slide-up 1.5s ease forwards',
-            }}
-          />
+            style={{position: 'absolute', bottom: '190px', left: '100px', width: '5rem', height: 'auto', animation: 'slide-up 1.5s ease forwards', }}/>
         ))}
 
         {/* CSS Keyframes for Slide-up Animation */}
