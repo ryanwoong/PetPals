@@ -8,6 +8,7 @@ import kibbleImage from '../assets/Images/kibble.png';
 import textImage from '../assets/Images/pet_text.png';
 import shopImage from '../assets/Images/shop.png';
 import hatImage from '../assets/Images/wizard_hat.png';
+import backgroundImage from '../assets/Images/background.jpeg'; // Make sure to add your background image
 import HomeNavBar from '../components/HomeNavBar';
 
 const HomePage = () => {
@@ -100,13 +101,28 @@ const HomePage = () => {
                 transform: 'translate(-50%, -50%)',
                 width: '40%',
                 height: 'auto',
+                zIndex: 3
               }}
             />
           )}
         </Transition>
 
-        <Container style={{ position: 'absolute', top: '15%', bottom: '15%', right: '20px', width: '43%', height: '83%', backgroundColor: '#FFFFFF', borderRadius: '10px', boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)', padding: '20px', overflowY: 'auto' }}>
-
+        <Container 
+          style={{ 
+            position: 'absolute', 
+            top: '15%', 
+            bottom: '15%', 
+            right: '20px', 
+            width: '500px', 
+            height: '500px', 
+            backgroundColor: 'rgba(255, 255, 255, 0.95)',
+            borderRadius: '10px', 
+            boxShadow: '0 4px 8px rgba(0, 0, 0, 0.2)',
+            padding: '20px', 
+            overflowY: 'auto',
+            zIndex: 2
+          }}
+        >
           <SegmentedControl
             fullWidth
             value={activeTab}
@@ -159,7 +175,14 @@ const HomePage = () => {
               {shopItems.map((item) => (
                 <Grid.Col span={4} key={item.id}>
                   <Container
-                    style={{border: '3px solid #FFCF9F', borderRadius: '8px', padding: '10px', backgroundColor: 'white', textAlign: 'center',}}>
+                    style={{
+                      border: '3px solid #FFCF9F',
+                      borderRadius: '8px',
+                      padding: '10px',
+                      backgroundColor: 'white',
+                      textAlign: 'center',
+                    }}
+                  >
                     <img src={item.image} alt={item.title} style={{ width: '50px', height: 'auto', marginBottom: '10px' }} />
                     <Text weight={500} size="sm" style={{ marginBottom: '5px', fontFamily: 'Fuzzy Bubbles' }}>{item.title}</Text>
                     <Text size="xs" color="gray" style={{ marginBottom: '10px' }}>${item.price}</Text>
@@ -185,7 +208,14 @@ const HomePage = () => {
               {inventoryItems.map((item) => (
                 <Grid.Col span={4} key={item.id}>
                   <Container
-                    style={{border: '3px solid #FFCF9F', borderRadius: '8px', padding: '10px', backgroundColor: 'white', textAlign: 'center' }}>
+                    style={{
+                      border: '3px solid #FFCF9F',
+                      borderRadius: '8px',
+                      padding: '10px',
+                      backgroundColor: 'white',
+                      textAlign: 'center'
+                    }}
+                  >
                     <img src={item.image} alt={item.title} style={{ width: '50px', height: 'auto', marginBottom: '10px' }} />
                     <Text weight={500} size="sm" style={{ marginBottom: '5px', fontFamily: 'Fuzzy Bubbles' }}>{item.title}</Text>
                     <Text size="xs" color="gray" style={{ marginBottom: '10px' }}>Quantity: {item.quantity}</Text>

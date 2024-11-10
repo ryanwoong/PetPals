@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import LogoImage from '../assets/Images/logo.png';
+import { Link, useNavigate, useLocation } from 'react-router-dom'; // Add useLocation
+import LogoImage from '../assets/logo.png';
 import { useAuth } from '../util/AuthContext';
 import { getFirestore, doc, getDoc } from 'firebase/firestore';
 import { Image } from '@mantine/core';
@@ -9,6 +9,7 @@ import coin from "../assets/Images/coin.png";
 const HomeNavBar = () => {
   const { logout, user } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation(); // Get current location
   const [userData, setUserData] = useState(null);
 
   useEffect(() => {
@@ -49,7 +50,7 @@ const HomeNavBar = () => {
       width: '70px',
       height: '70px',
       borderRadius: '50%',
-      backgroundColor: 'white',
+      backgroundColor: '#FFFAC3',
       marginRight: '20px',
     },
     logoImage: {
@@ -61,9 +62,14 @@ const HomeNavBar = () => {
       color: 'black',
       textDecoration: 'none',
       fontSize: '16px',
+      padding: '5px 10px',
+      borderRadius: '15px',
+      transition: 'all 0.3s ease',
     },
-    active: {
-      color: '#FFFAC3',
+    activeLink: {
+      backgroundColor: '#FFFAC3',
+      color: '#333',
+      boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
     },
     navGroup: {
       display: 'flex',
@@ -84,7 +90,6 @@ const HomeNavBar = () => {
     logoutButtonHover: {
       backgroundColor: '#FF5252',
     },
-    // New styles for user info
     userInfo: {
       display: 'flex',
       alignItems: 'center',
@@ -134,15 +139,23 @@ const HomeNavBar = () => {
     }
   };
 
+  // Function to determine if a link is active
+  const getLinkStyle = (path) => {
+    return {
+      ...styles.link,
+      ...(location.pathname === path ? styles.activeLink : {})
+    };
+  };
+
   return (
     <nav style={styles.navbar}>
       <div style={styles.navGroup}>
         <Link to="/home" style={styles.logoContainer}>
           <img src={LogoImage} alt="Logo" style={styles.logoImage} />
         </Link>
-        <Link to="/home" style={styles.link}>Home</Link>
-        <Link to="/community" style={styles.link}>Community</Link>
-        <Link to="/journal" style={styles.link}>Journal</Link>
+        <Link to="/home" style={getLinkStyle('/home')}>Home</Link>
+        <Link to="/community" style={getLinkStyle('/community')}>Community</Link>
+        <Link to="/journal" style={getLinkStyle('/journal')}>Journal</Link>
       </div>
 
       <div style={styles.userInfo}>
