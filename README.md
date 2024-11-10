@@ -1,6 +1,9 @@
 ## 💡 Inspiration
 We believe mental health awareness is crucial for everyone. We are motivated by the understanding that many people face challenges silently, often without sharing them with anyone. Personal experience has shown us the impact that mental health can have on individuals, and we're committed to supporting those who may be struggling.
 
+## 🕊️ Peace and Inclusion
+Our project promotes peace and inclusion by providing a supportive, anonymous space that addresses social isolation and encourages open emotional expression. By creating a welcoming environment where users can share, connect, and receive support without fear of judgment, the platform fosters inclusivity and breaks down social barriers. Through positive interactions and shared experiences, it helps users feel connected and valued, creating a peaceful, inclusive community.
+
 ## 🤝 What it does
 **PetPal** is an anonymous online platform designed to help users reflect on their emotions and connect with others in a supportive and uplifting environment. It allows users to:
 
