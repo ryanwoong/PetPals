@@ -47,7 +47,7 @@ const AuthPage = () => {
       if (method === "signIn") {
         await signInWithEmailAndPassword(auth, form.email, form.password);
         alert('Login successful!');
-        navigate("/pages/HomePage", { replace: true });
+        navigate("/home", { replace: true });
       } else {
         if (form.password !== form.confirmPassword) {
           setError("Passwords do not match");
@@ -56,7 +56,7 @@ const AuthPage = () => {
         
         await createUserWithEmailAndPassword(auth, form.email, form.password);
         alert('Registration successful!');
-        navigate("/pages/Instruction", { replace: true });
+        navigate("/instructions", { replace: true });
       }
     } catch (err) {
       setError(err.message); // Display Firebase error messages
@@ -68,7 +68,7 @@ const AuthPage = () => {
     try {
       await signInWithPopup(auth, googleProvider);
       alert('Google Sign-In successful!');
-      navigate("/pages/HomePage", { replace: true });
+      navigate("/home", { replace: true });
     } catch (err) {
       setError(err.message); // Display error if Google sign-in fails
     }
