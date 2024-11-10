@@ -46,7 +46,7 @@ const AuthPage = () => {
         // Use the login function from context
         await login(form.email, form.password);
         alert('Login successful!');
-        navigate("/pages/HomePage", { replace: true });
+        navigate("/home", { replace: true });
       } else {
         if (form.password !== form.confirmPassword) {
           setError("Passwords do not match");
@@ -55,7 +55,7 @@ const AuthPage = () => {
         // Use the register function from context
         await register(form.email, form.password);
         alert('Registration successful!');
-        navigate("/pages/Instruction", { replace: true });
+        navigate("/instructions", { replace: true });
       }
     } catch (err) {
       // Handle specific Firebase errors with more user-friendly messages
@@ -86,7 +86,7 @@ const AuthPage = () => {
     try {
       await signInWithPopup(auth, googleProvider);
       alert('Google Sign-In successful!');
-      navigate("/pages/HomePage", { replace: true });
+      navigate("/home", { replace: true });
     } catch (err) {
       switch (err.code) {
         case 'auth/popup-closed-by-user':

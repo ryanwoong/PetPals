@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Box, Button, Container, Title, Text, TextInput } from '@mantine/core';
-import catGif from '../assets/Cat.gif';
-import monkeyGif from '../assets/Monkey2.gif';
-import snakeGif from '../assets/Snake.gif';
+import catGif from '../assets/Images/cat.gif';
+import monkeyGif from '../assets/Images/monkey.gif';
+import snakeGif from '../assets/Images/snake.gif';
 
 const PickAPetPage = () => {
   const [petNames, setPetNames] = useState({
