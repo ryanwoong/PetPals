@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { Text, Box, Button, Textarea, Loader } from '@mantine/core';
-import { useNavigate } from 'react-router-dom';
 import HomeNavBar from '../components/HomeNavBar';
 import { BiComment, BiExpandAlt, BiCollapseAlt } from 'react-icons/bi';
 import axios from 'axios';
@@ -9,15 +8,14 @@ import { addComment } from '../functions/database/addComment';
 import { fetchComments } from '../functions/database/fetchComments';
 
 const CommunityFeed = () => {
-  const [entries, setEntries] = useState([]);
-  const [comments, setComments] = useState({});
-  const [expanded, setExpanded] = useState({});
-  const [showAddComment, setShowAddComment] = useState({});
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-  const [commentLoading, setCommentLoading] = useState({});
-  const navigate = useNavigate();
-  const { user } = useAuth();
+    const [entries, setEntries] = useState([]);
+    const [comments, setComments] = useState({});
+    const [expanded, setExpanded] = useState({});
+    const [showAddComment, setShowAddComment] = useState({});
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
+    const [commentLoading, setCommentLoading] = useState({});
+    const { user } = useAuth();
 
   useEffect(() => {
     const fetchPosts = async () => {

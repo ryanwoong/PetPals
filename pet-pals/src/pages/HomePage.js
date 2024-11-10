@@ -8,7 +8,6 @@ import kibbleImage from '../assets/Images/kibble.png';
 import textImage from '../assets/Images/pet_text.png';
 import shopImage from '../assets/Images/shop.png';
 import hatImage from '../assets/Images/wizard_hat.png';
-import backgroundImage from '../assets/Images/background.jpeg'; // Make sure to add your background image
 import HomeNavBar from '../components/HomeNavBar';
 
 const HomePage = () => {
@@ -107,22 +106,8 @@ const HomePage = () => {
           )}
         </Transition>
 
-        <Container 
-          style={{ 
-            position: 'absolute', 
-            top: '15%', 
-            bottom: '15%', 
-            right: '20px', 
-            width: '500px', 
-            height: '500px', 
-            backgroundColor: 'rgba(255, 255, 255, 0.95)',
-            borderRadius: '10px', 
-            boxShadow: '0 4px 8px rgba(0, 0, 0, 0.2)',
-            padding: '20px', 
-            overflowY: 'auto',
-            zIndex: 2
-          }}
-        >
+        <Container
+          style={{position: 'absolute', top: '15%', bottom: '15%', right: '20px', width: '42%', height: '83%', backgroundColor: 'rgba(255, 255, 255, 0.95)', borderRadius: '10px',  boxShadow: '0 4px 8px rgba(0, 0, 0, 0.2)', padding: '20px', overflowY: 'auto', zIndex: 2}}>
           <SegmentedControl
             fullWidth
             value={activeTab}

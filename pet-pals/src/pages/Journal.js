@@ -1,16 +1,15 @@
-import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
 import {
-  Text,
-  Button,
-  SimpleGrid,
-  Box,
-  Switch,
-  TextInput,
-  Textarea,
-  Group,
-  Loader,
+    Box,
+    Button,
+    Group,
+    Loader,
+    SimpleGrid,
+    Switch,
+    Text,
+    TextInput,
+    Textarea,
 } from '@mantine/core';
+import React, { useEffect, useState } from 'react';
 import HomeNavBar from '../components/HomeNavBar';
 import { addEntry } from '../functions/database/addEntry';
 import { fetchUserPosts } from '../functions/database/fetchUserPosts';
@@ -23,7 +22,6 @@ const Journal = () => {
   const [entries, setEntries] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const navigate = useNavigate();
   const { user } = useAuth();
 
   // Fetch user's posts when component mounts
