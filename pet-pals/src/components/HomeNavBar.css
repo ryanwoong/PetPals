@@ -11,15 +11,13 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 80px;
-    height: 80px;
-    border-radius: 50%;
-    background-color: white;
+    width: 100px;
+    height: 'auto';
     margin-right: 20px;
   }
   
   .logo-image {
-    width: 40px;
+    width: 80px;
     height: auto;
   }
   
